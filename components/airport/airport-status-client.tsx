@@ -10,6 +10,7 @@ import { LiveClock } from '../ui/live-clock'
 import { AirportZone, airportZones } from '@/lib/config/airport'
 import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
+import { BookingSearchDialog } from '../booking/booking-search-dialog'
 
 interface AirportVehicleType {
     id: number[]
@@ -144,6 +145,7 @@ function AirportHeader({ selectedZone }: {
                     </span>
                 </div>
             </div>
+            <BookingSearchDialog />
             <QRCodeGeneratorDialog />
             <LiveClock className='mx-auto md:ml-auto' />
         </header>

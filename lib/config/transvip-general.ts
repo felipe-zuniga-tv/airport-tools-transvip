@@ -36,6 +36,7 @@ export const paymentMethods = {
     CARD: 'Tarjeta de Credito o Debito',
     CREDIT_CARD: 'Tarjeta de Crédito',
     CREDIT_CARD_MP: 'Tarjeta de Crédito Mercadopago',
+    CARD_TOTEM: 'Tarjeta de crédito/débito tótem',
     FACTURA: 'Factura Credito',
     CASH: 'Efectivo Pesos',
 }
