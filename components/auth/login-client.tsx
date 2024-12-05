@@ -29,9 +29,10 @@ export function LoginFormClient() {
             }
             
             const loginResponse = await login(email, password)
+            console.log(loginResponse)
 
             if (loginResponse && loginResponse.status === 200) {
-                router.refresh()
+                // router.refresh()
                 router.push(Routes.START)
             } else {
                 setError(loginResponse?.message || 'Ocurrió un error.')
