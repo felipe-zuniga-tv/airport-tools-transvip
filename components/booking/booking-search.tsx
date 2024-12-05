@@ -391,11 +391,10 @@ function BookingCustomer({ result }: {
                             <span>{result.customer.full_name}</span>
                         </div>
                         <span>·</span>
-                        <div className='card-info-detail gap-1'>
+                        <div className='hidden card-info-detail gap-1'>
                             <MailIcon className='size-4' />
                             <EmailLink address={result.customer.email} />
                         </div>
-                        <span>·</span>
                         <div className='card-info-detail gap-1'>
                             <PhoneIcon className='size-4' />
                             <Link href={`tel:${result.customer.phone_number}`} className='hover:underline'>
