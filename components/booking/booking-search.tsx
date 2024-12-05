@@ -23,14 +23,6 @@ let chileanPeso = new Intl.NumberFormat('es-CL', {
 // Vehicle States to Show
 const STATES_TO_SHOW = [2, 4, 12, 0, 1, 15]
 
-enum BookingSearchRequest {
-    BOOKING = 'booking',
-    VEHICLE = 'vehicle',
-    LICENSE = 'license',
-    DRIVER = 'driver',
-    SHARED_SERVICE = 'shared_service'
-}
-
 export function BookingIdSearch({ searchResults }: {
     searchResults: IBookingInfoOutput[],
 }) {
@@ -55,11 +47,9 @@ function BookingCard({ result }: {
         <div className='booking-detail main-card'>
             <BookingBadges result={result} />
             <BookingMainDetails result={result} />
-            <div className='grid grid-cols-2 gap-2'>
-                <BookingCustomer result={result} />
-                <BookingPayment result={result} />
-            </div>
             <BookingDates result={result} />
+            <BookingCustomer result={result} />
+            <BookingPayment result={result} />
             <BookingDirections result={result} />
             <BookingVehicle result={result} />
         </div>
@@ -210,8 +200,8 @@ function BookingDates({ result }: {
             {/* <span className='font-bold titles-font hidden'>Fechas</span> */}
             <div className='info-section'>
                 <div className='flex flex-col gap-1 w-full'>
-                    <div className='card-info-detail gap-1'>
-                        <span className='font-semibold date-tag'>Recogida:</span>
+                    <div className='card-info-detail gap-2'>
+                        <span className='font-semibold date-tag'>Fecha de Recogida:</span>
                         <span>{booking_datetime_local.toLocaleString()}</span>
                         {days_to_trip > 0 && (
                             <>
@@ -238,7 +228,7 @@ function BookingDates({ result }: {
                             </>
                         )}
                     </div>
-                    <div className='card-info-detail gap-1'>
+                    {/* <div className='card-info-detail gap-1'>
                         <span className='font-semibold date-tag'>Creación:</span>
                         <span>{new Date(result.dates.creation_datetime).toLocaleString()}</span>
                         {result.booking.creation_identity &&
@@ -329,7 +319,7 @@ function BookingDates({ result }: {
                             <span className='font-semibold'>Comentario:</span>
                             <span>{result.booking.no_show_reason}</span>
                         </div>
-                    }
+                    } */}
                     {result.dates.cancellation_datetime &&
                         <div className='card-info-detail gap-1'>
                             <span className='font-semibold date-tag'>Cancelación:</span>
@@ -357,14 +347,17 @@ function BookingPayment({ result }: {
             {/* <span className='font-bold titles-font'>Pago</span> */}
             <div className='info-section'>
                 <div className='flex flex-col gap-1 w-full'>
-                    <div className='card-info-detail flex-row gap-1'>
-                        <span className='font-semibold'>Monto Estimado:</span>
-                        <span className=''>{chileanPeso.format(result.payment.estimated_payment)}</span>
-                        <PaymentRouteType result={result} />
-                    </div>
-                    <div className='card-info-detail flex-row gap-1'>
-                        <span className='font-semibold'>Monto Real:</span>
-                        <span className=''>{chileanPeso.format(result.payment.actual_payment)}</span>
+                    <div className='flex flex-row gap-2 w-full'>
+                        <div className='card-info-detail flex-row gap-1'>
+                            <span className='font-semibold'>Monto Estimado:</span>
+                            <span className=''>{chileanPeso.format(result.payment.estimated_payment)}</span>
+                        </div>
+                        <span>·</span>
+                        <div className='card-info-detail flex-row gap-1'>
+                            <span className='font-semibold'>Monto Real:</span>
+                            <span className=''>{chileanPeso.format(result.payment.actual_payment)}</span>
+                        </div>
+                        <PaymentRouteType result={result} className='ml-auto' />
                     </div>
                     <div className='card-info-detail flex-row gap-1'>
                         <span className='font-semibold'>Forma de Pago:</span>
@@ -391,28 +384,30 @@ function BookingCustomer({ result }: {
         <div className='booking-detail info-customer'>
             {/* <span className='font-bold titles-font'>Pasajeros</span> */}
             <div className='info-section flex flex-col lg:flex-row gap-1 lg:gap-4 items-start lg:items-center justify-start w-full'>
-                <div className="flex flex-row gap-2 w-full">
-                    <div className='flex flex-col gap-1'>
-                        <div className='card-info-detail'>
+                <div className="flex flex-row justify-between gap-2 w-full">
+                    <div className='flex flex-row gap-2'>
+                        <div className='card-info-detail gap-1'>
                             <UserCircleIcon className='size-4' />
                             <span>{result.customer.full_name}</span>
                         </div>
-                        <div className='card-info-detail'>
+                        <span>·</span>
+                        <div className='card-info-detail gap-1'>
                             <MailIcon className='size-4' />
                             <EmailLink address={result.customer.email} />
                         </div>
-                        <div className='card-info-detail'>
+                        <span>·</span>
+                        <div className='card-info-detail gap-1'>
                             <PhoneIcon className='size-4' />
                             <Link href={`tel:${result.customer.phone_number}`} className='hover:underline'>
                                 <span>{result.customer.phone_number}</span>
                             </Link>
                         </div>
                     </div>
-                    <div className='card-info-detail ml-auto md:ml-4'>
+                    <div className='card-info-detail'>
                         <CustomerVipBadge result={result} />
                     </div>
                 </div>
-                {result.booking.qr_link &&
+                {result.booking.qr_link && false &&
                     <div className='qr-link hidden ml-auto min-w-fit lg:flex flex-col items-center justify-center'>
                         <span className='font-bold text-sm'>Código QR</span>
                         <Zoom>

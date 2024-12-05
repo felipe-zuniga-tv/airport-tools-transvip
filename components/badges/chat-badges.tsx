@@ -97,7 +97,7 @@ export function PaymentRouteType({ result, className } : {
     className?: string 
 }) {
     return (
-        <Badge variant={'default'} className={cn('ml-2 bg-slate-700 text-white', className || "")}>
+        <Badge variant={'default'} className={cn('bg-slate-700 text-white', className || "")}>
             {result.payment.fare_route_type === 1 ? 'Fija' : 'Variable'}
         </Badge>
     )
