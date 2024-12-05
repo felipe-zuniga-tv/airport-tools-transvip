@@ -149,12 +149,12 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
             )}
 
             {/* New dialog for confirmation */}
-            {/* <DeleteVehicleDialog 
+            <DeleteVehicleDialog 
                 open={isDialogOpen} 
                 onOpenChange={setIsDialogOpen} 
                 vehicleToDelete={vehicleToDelete} 
                 onDelete={deleteVehicle} 
-            /> */}
+            />
         </div>
     )
 }
@@ -301,7 +301,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
                             <Button
                                 variant={"default"}
                                 onClick={() => handleDeleteVehicle(vehicle)}
-                                className="hidden text-red-500 hover:text-red-700 bg-white hover:bg-gray-200 w-12">
+                                className="text-red-500 hover:text-red-700 bg-white hover:bg-gray-200 w-12">
                                 <TrashIcon />
                             </Button>
                         </div>
