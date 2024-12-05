@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
-import { ArrowLeft, Clock, Users } from 'lucide-react'
+import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
 import { TransvipLogo } from '../transvip/transvip-logo'
 import { calculateDuration, cn } from '@/lib/utils'
 import { LiveClock } from '../ui/live-clock'
@@ -11,6 +11,8 @@ import { AirportZone, airportZones } from '@/lib/config/airport'
 import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
 import { BookingSearchDialog } from '../booking/booking-search-dialog'
+import { Button } from '../ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '../ui/dialog';
 
 interface AirportVehicleType {
     id: number[]
@@ -43,6 +45,8 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     const [selectedType, setSelectedType] = useState<string>(vehicleTypesList[0]?.name || ''); // Initialize with first vehicle type
     const [vehicleList, setVehicleList] = useState<AirportVehicleDetail[]>([])
     const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
     useEffect(() => {
         const fetchUpdates = async () => {
@@ -83,7 +87,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                     // // const uniqueVehicles: AirportVehicleDetail[] = Array.from(new Set(data.map(v => JSON.stringify(v)))).map(v => JSON.parse(v));
                     // console.log("UNIQUE VEHICLES")
                     // console.log(uniqueVehicles)
-                    
+
                     setVehicleList(data)
                 } else {
                     console.error('Failed to fetch vehicle list');
@@ -97,6 +101,29 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
 
         fetchVehicles()
     }, [selectedType, vehicleTypes]) // Dependency on selectedType and vehicleTypes
+
+    const handleDeleteVehicle = (vehicle: AirportVehicleDetail) => {
+        setVehicleToDelete(vehicle);
+        setIsDialogOpen(true);
+    }
+
+    const deleteVehicle = async (vehicle: AirportVehicleDetail) => {
+        try {
+            const response = await fetch(`/api/airport/delete-vehicles-airport?zoneId=${selectedZone.zone_id}&fleetId=${vehicle.fleet_id}`, {
+                method: 'GET',
+            });
+            if (response.ok) {
+                const data = await response.json()
+
+                console.log(data)
+                // Optionally, refresh the vehicle list or update state
+            } else {
+                console.error('Failed to delete vehicle');
+            }
+        } catch (error) {
+            console.error('Error deleting vehicle:', error);
+        }
+    }
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
@@ -118,8 +145,16 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                     <span className="text-xl font-bold">Cargando...</span>
                 </div>
             ) : (
-                <VehicleListDetail vehicleList={vehicleList} />
+                <VehicleListDetail vehicleList={vehicleList} handleDeleteVehicle={handleDeleteVehicle} />
             )}
+
+            {/* New dialog for confirmation */}
+            {/* <DeleteVehicleDialog 
+                open={isDialogOpen} 
+                onOpenChange={setIsDialogOpen} 
+                vehicleToDelete={vehicleToDelete} 
+                onDelete={deleteVehicle} 
+            /> */}
         </div>
     )
 }
@@ -131,7 +166,7 @@ function AirportHeader({ selectedZone }: {
     return (
         <header className="bg-transvip/90 shadow-md p-3 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
             <div className='w-full flex flex-row items-center justify-center sm:justify-start gap-4'>
-                <TransvipLogo size={36} colored={false} logoOnly={true} className='hidden lg:block' />
+                <TransvipLogo size={36} colored={false} logoOnly={true} className='hidden' />
                 <div className='flex flex-col gap-1 justify-start'>
                     <div className='flex flex-row gap-1 items-center justify-center md:justify-start w-full'>
                         <span className="text-xl lg:text-2xl font-bold text-white">Zona Iluminada</span>
@@ -194,7 +229,10 @@ function VehicleListSummary({ vehicleList }: { vehicleList: AirportVehicleDetail
     )
 }
 
-function VehicleListDetail({ vehicleList }: { vehicleList: AirportVehicleDetail[] }) {
+function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
+    vehicleList: AirportVehicleDetail[]
+    handleDeleteVehicle: (arg0: AirportVehicleDetail) => void
+}) {
     if (!vehicleList || vehicleList.length === 0) {
         return <div className='w-full p-4 font-bold text-center text-3xl'>Sin resultados</div>
     }
@@ -245,23 +283,79 @@ function VehicleListDetail({ vehicleList }: { vehicleList: AirportVehicleDetail[
                                 </div>
                             </div>
                         </div>
-                        <div className='vehicle-pax flex flex-col gap-2 items-center justify-center w-[170px] lg:w-[220px]'>
-                            <span className='font-semibold'>Pasajeros</span>
-                            <div className='flex flex-row gap-4 items-center'>
-                                <div className='flex flex-row gap-1 justify-start items-center'>
-                                    <span className='text-center font-semibold'><Clock className='h-5 w-5' /></span>
-                                    <span className="text-center">{vehicle.passenger_entry_time ? `${calculateDuration(vehicle.passenger_entry_time)} min` : '- min'}</span>
-                                </div>
-                                <span>·</span>
-                                <div className='flex flex-row gap-1 justify-start items-center'>
-                                    <span className='text-center font-semibold'><Users className='h-5 w-5' /></span>
-                                    <span className="text-center">{vehicle.total_passengers ? Math.max(0, vehicle.total_passengers) : 0}</span>
+                        <div className='flex flex-row gap-2 items-center'>
+                            <div className='vehicle-pax flex flex-col gap-2 items-center justify-center w-[170px] lg:w-[220px]'>
+                                <span className='font-semibold'>Pasajeros</span>
+                                <div className='flex flex-row gap-4 items-center'>
+                                    <div className='flex flex-row gap-1 justify-start items-center'>
+                                        <span className='text-center font-semibold'><Clock className='h-5 w-5' /></span>
+                                        <span className="text-center">{vehicle.passenger_entry_time ? `${calculateDuration(vehicle.passenger_entry_time)} min` : '- min'}</span>
+                                    </div>
+                                    <span>·</span>
+                                    <div className='flex flex-row gap-1 justify-start items-center'>
+                                        <span className='text-center font-semibold'><Users className='h-5 w-5' /></span>
+                                        <span className="text-center">{vehicle.total_passengers ? Math.max(0, vehicle.total_passengers) : 0}</span>
+                                    </div>
                                 </div>
                             </div>
+                            <Button
+                                variant={"default"}
+                                onClick={() => handleDeleteVehicle(vehicle)}
+                                className="hidden text-red-500 hover:text-red-700 bg-white hover:bg-gray-200 w-12">
+                                <TrashIcon />
+                            </Button>
                         </div>
                     </div>
                 )
             })}
         </div>
     )
+}
+
+// Component for the delete vehicle dialog
+function DeleteVehicleDialog({ open, onOpenChange, vehicleToDelete, onDelete }: {
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
+    vehicleToDelete: AirportVehicleDetail | null;
+    onDelete: (vehicle: AirportVehicleDetail) => Promise<void>;
+}) {
+    return (
+        <Dialog open={open} onOpenChange={onOpenChange}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Confirmación</DialogTitle>
+                    <DialogDescription>
+                        ¿Estás seguro que quieres borrar el vehículo?
+                    </DialogDescription>
+                </DialogHeader>
+                <div className='flex flex-col gap-2 my-2 items-start p-3 rounded-md bg-gray-200'>
+                    <div className='flex flex-col gap-2 items-start'>
+                        <div className='flex flex-row gap-1 items-center'>
+                            <span className='font-semibold'>Número de Móvil:</span>
+                            <span>{ vehicleToDelete?.unique_car_id } ({vehicleToDelete?.tipo_contrato}) </span>
+                        </div>
+                        <div className='flex flex-row gap-1 items-center'>
+                            <span className='font-semibold'>Conductor:</span>
+                            <span>{ vehicleToDelete?.fleet_name } </span>
+                        </div>
+                    </div>
+                </div>
+                <DialogFooter className='sm:justify-between'>
+                    <DialogClose>
+                        <Button variant='secondary' onClick={() => onOpenChange(false)}>
+                            Cancelar
+                        </Button>
+                    </DialogClose>
+                    <Button variant='destructive' onClick={() => {
+                        if (vehicleToDelete !== null) {
+                            // Perform the deletion
+                            onDelete(vehicleToDelete);
+                        }
+                        onOpenChange(false);
+                    }}>Borrar
+                    </Button>
+                </DialogFooter>
+            </DialogContent>
+        </Dialog>
+    );
 }

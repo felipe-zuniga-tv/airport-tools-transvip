@@ -5,17 +5,18 @@ import { VEHICLE_STATUS } from "../utils";
 import { IBookingInfoOutput, IBookingInfo, IDriverProfile, IVehicleDetail } from './types'
 
 // URLs
-const VEHICLE_STATUS_API_URL  = buildAPIUrl(process.env.GET_VEHICLE_STATUS);
-const VEHICLE_DETAIL_API_URL  = buildAPIUrl(process.env.GET_VEHICLE_DETAIL);
-const DRIVER_SEARCH_API_URL   = buildAPIUrl(process.env.SEARCH_DRIVER);
-const DRIVER_PROFILE_API_URL  = buildAPIUrl(process.env.GET_DRIVER_PROFILE);
-const DRIVER_RATINGS_API_URL  = buildAPIUrl(process.env.GET_DRIVER_RATINGS);
-const BOOKING_DETAIL_URL      = buildAPIUrl(process.env.GET_BOOKING_DETAIL);
-const BOOKING_INFO_FULL_URL   = buildAPIUrl(process.env.GET_BOOKING_INFO_FULL);
-const BOOKING_ID_API_URL      = buildAPIUrl(process.env.GET_BOOKING_BY_ID);
-const ZONA_ILUMINADA_CITY     = buildAPIUrl(process.env.GET_ZONA_ILUMINADA_CITY);
-const ZONA_ILUMINADA_SERVICES = buildAPIUrl(process.env.GET_ZONA_ILUMINADA_SERVICES);
-const AIRPORT_ZONE_API_URL    = buildAPIUrl(process.env.GET_STATUS_AIRPORT_CITY);
+const VEHICLE_STATUS_API_URL                = buildAPIUrl(process.env.GET_VEHICLE_STATUS);
+const VEHICLE_DETAIL_API_URL                = buildAPIUrl(process.env.GET_VEHICLE_DETAIL);
+const DRIVER_SEARCH_API_URL                 = buildAPIUrl(process.env.SEARCH_DRIVER);
+const DRIVER_PROFILE_API_URL                = buildAPIUrl(process.env.GET_DRIVER_PROFILE);
+const DRIVER_RATINGS_API_URL                = buildAPIUrl(process.env.GET_DRIVER_RATINGS);
+const BOOKING_DETAIL_URL                    = buildAPIUrl(process.env.GET_BOOKING_DETAIL);
+const BOOKING_INFO_FULL_URL                 = buildAPIUrl(process.env.GET_BOOKING_INFO_FULL);
+const BOOKING_ID_API_URL                    = buildAPIUrl(process.env.GET_BOOKING_BY_ID);
+const ZONA_ILUMINADA_CITY                   = buildAPIUrl(process.env.GET_ZONA_ILUMINADA_CITY);
+const ZONA_ILUMINADA_SERVICES               = buildAPIUrl(process.env.GET_ZONA_ILUMINADA_SERVICES);
+const AIRPORT_ZONE_API_URL                  = buildAPIUrl(process.env.GET_STATUS_AIRPORT_CITY);
+const DELETE_VEHICLE_AIRPORT_ZONE_API_URL   = buildAPIUrl(process.env.DELETE_VEHICLE_FROM_ZONA_ILUMINADA);
 
 // AUX FUNCTIONS
 function buildAPIUrl(endpoint: string | undefined) {
@@ -38,11 +39,27 @@ async function getResponseFromURL(URL: string) {
         return null
     }
 }
-// function addHours(date : Date, hours : number) {
-//     const hoursToAdd = hours * 60 * 60 * 1000;
-//     date.setTime(date.getTime() + hoursToAdd);
-//     return date;
-// }
+
+async function postResponseToURL(URL: string, body: any) {
+    try {
+        const options = {
+            method: 'POST',
+            headers: {
+                'content-language': 'es',
+                'Content-Type': 'application/json' // Set content type for JSON
+            },
+            body: JSON.stringify(body) // Convert body to JSON string
+        };
+        const response = await fetch(URL, options)
+        const output = await response.json()
+
+        return output
+    } catch (e) {
+        console.log(e)
+        return null
+    }
+}
+
 export function buildWhatsappLink(phone_number : string, text: string) {
     return encodeURI(`https://wa.me/${phone_number.replace('+', '').trim()}?text=${text.trim()}`)
 }
@@ -726,6 +743,7 @@ export async function getZonaIluminada(cityName = 'Santiago') {
         regions: results
     }
 }
+
 export async function getZonaIluminadaServices(zone_id: number) {
     const session = await getSession()
     const currentUser = session?.user as any
@@ -768,4 +786,25 @@ export async function getAirportStatus(branchId : number, zoneId: number, vehicl
     const { result } = data
 
     return result
-} 
+}
+
+export async function deleteVehicleZonaIluminada(fleet_id: number, region_id: number) {
+    const session = await getSession()
+    const currentUser = session?.user as any
+    const accessToken = currentUser?.accessToken as string
+
+    const request = {
+        access_token: accessToken,
+        fleet_id: fleet_id,
+        region_id: region_id,
+        is_delete: 1,
+    }
+
+    const { status, data } = await postResponseToURL(`${DELETE_VEHICLE_AIRPORT_ZONE_API_URL}`, request)
+
+    if (status !== 200) return null
+
+    const { result } = data
+
+    return result
+}

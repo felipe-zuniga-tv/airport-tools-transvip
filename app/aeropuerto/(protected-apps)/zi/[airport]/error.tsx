@@ -12,7 +12,7 @@ export default function Error() {
         <h2>Algo no salió bien...</h2>
         <Button variant={'default'}
           className="bg-transvip hover:bg-transvip-dark py-4 text-lg h-12 mt-4">
-          <Link href={Routes.AIRPORT.ZI_SCL}>
+          <Link href={Routes.AIRPORT.HOME}>
             Intentar nuevamente
           </Link>
         </Button>
