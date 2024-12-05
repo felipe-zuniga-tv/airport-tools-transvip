@@ -77,6 +77,12 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                 const response = await fetch(`/api/airport/get-vehicles-dashboard?branchId=${selectedZone.branch_id}&zoneId=${selectedZone.zone_id}&vehicleId=${vehicleTypes.find(v => v.name === selectedType)?.id}`)
                 if (response.ok) {
                     const data = await response.json()
+                    // console.log("DATA")
+                    // console.log(data)
+                    // // const uniqueVehicles: AirportVehicleDetail[] = Array.from(new Set(data.map(v => JSON.stringify(v)))).map(v => JSON.parse(v));
+                    // console.log("UNIQUE VEHICLES")
+                    // console.log(uniqueVehicles)
+                    
                     setVehicleList(data)
                 } else {
                     console.error('Failed to fetch vehicle list');

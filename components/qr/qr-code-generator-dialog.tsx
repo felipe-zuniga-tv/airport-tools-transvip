@@ -26,8 +26,8 @@ export function QRCodeGeneratorDialog() {
       return;
     }
 
-    const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"www.transvip.cl/"}`);
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${qrData}`;
+    const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"wgiw.transvip.cl/"}`);
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${qrData}&color=ff6b00&margin=10`;
     setQrCodeUrl(qrUrl);
     setIsQrVisible(true);
   };
