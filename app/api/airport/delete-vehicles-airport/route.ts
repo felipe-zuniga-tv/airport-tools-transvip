@@ -9,16 +9,14 @@ export async function GET(request: NextRequest) {
     return Response.json({ status: 404, message: 'Zone ID and Fleet ID are required' });
   }
 
-  return Response.json({ Conductor: fleetId, Zona: zoneId })
-
-  // try {
-  //   const result = await deleteVehicleZonaIluminada(Number(fleetId), Number(zoneId));
-  //   if (!result) {
-  //     return Response.json({ status: 404, message: 'Vehicle not processed' });
-  //   }
-  //   return Response.json(result)
-  // } catch (error) {
-  //   console.error(error);
-  //   return Response.json({ status: 500, message: 'Internal server error' });
-  // }
+  try {
+    const result = await deleteVehicleZonaIluminada(Number(fleetId), Number(zoneId));
+    if (!result) {
+      return Response.json({ status: 404, message: 'Vehicle not processed' });
+    }
+    return Response.json(result)
+  } catch (error) {
+    console.error(error);
+    return Response.json({ status: 500, message: 'Internal server error' });
+  }
 }
