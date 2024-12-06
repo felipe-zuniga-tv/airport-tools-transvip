@@ -11,6 +11,7 @@ export async function GET(request: NextRequest) {
 
   try {
     const result = await deleteVehicleZonaIluminada(Number(fleetId), Number(zoneId));
+    console.log(result)
     if (!result) {
       return Response.json({ status: 404, message: 'Vehicle not processed' });
     }

@@ -12,3 +12,11 @@ export const Spinner = ({ size }: { size? : keyof typeof spinnerSizes }) => {
         </svg>
     )
 }
+
+export const LoadingMessage = ({ message }: { message : string }) => {
+    return (
+        <div className="flex justify-center items-center h-full">
+            <span className="text-xl font-bold">{ message }</span>
+        </div>
+    )
+}

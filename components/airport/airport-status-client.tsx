@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
@@ -13,111 +13,38 @@ import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
 import { BookingSearchDialog } from '../booking/booking-search-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '../ui/dialog';
-
-interface AirportVehicleType {
-    id: number[]
-    count: number
-    vehicle_image: string
-    name: string
-}
-
-interface AirportVehicleDetail {
-    unique_car_id: string
-    tipo_contrato: string
-    name: string
-    action: number
-    fleet_id: number
-    fleet_name: string
-    entry_time: string
-    total_passengers: number
-    passenger_entry_time: string
-}
-
-const secondsToUpdate = 60 // Refresh data
-const maxWaitTime = 15 // Minutes
+import { useAirportData } from '@/hooks/use-airport-data'
+import { useVehicleList } from '@/hooks/use-vehicle-list'
+import { airportService } from '@/services/airport'
+import { AIRPORT_CONSTANTS } from '@/lib/config/airport'
+import { AirportVehicleDetail, AirportVehicleType } from '@/lib/types'
+import { LoadingMessage } from '../ui/loading'
 
 export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId }: {
     vehicleTypesList: AirportVehicleType[]
     zone: AirportZone
 }) {
-    const [selectedZone, _] = useState(initialZoneId || airportZones[0])
-    const [vehicleTypes, setVehicleTypes] = useState(vehicleTypesList)
-    const [selectedType, setSelectedType] = useState<string>(vehicleTypesList[0]?.name || ''); // Initialize with first vehicle type
-    const [vehicleList, setVehicleList] = useState<AirportVehicleDetail[]>([])
-    const [isLoading, setIsLoading] = useState<boolean>(false)
+    const [selectedZone] = useState(initialZoneId || airportZones[0]);
+    const [selectedType, setSelectedType] = useState(vehicleTypesList ? vehicleTypesList[0].name : '');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
-    useEffect(() => {
-        const fetchUpdates = async () => {
-            try {
-                const response = await fetch(`/api/airport/refresh-dashboard?zoneId=${selectedZone.zone_id}`)
-                if (response.ok) {
-                    const data = await response.json()
-                    setVehicleTypes(data)
-                } else {
-                    console.error('Failed to fetch vehicle types');
-                }
-            } catch (error) {
-                console.error('Error fetching vehicle types:', error);
-            }
-        }
+    const { vehicleTypes, isLoading, fetchUpdates } = useAirportData(selectedZone, AIRPORT_CONSTANTS.SECONDS_TO_UPDATE);
+    const { vehicleList, fetchVehicles } = useVehicleList(selectedZone, selectedType, vehicleTypes);
 
-        fetchUpdates()
-        const interval = setInterval(fetchUpdates, secondsToUpdate * 1000)
-
-        return () => clearInterval(interval)
-    }, [selectedZone])
-
-    useEffect(() => {
-        const fetchVehicles = async () => {
-            if (!selectedType) {
-                setVehicleList([])
-                return
-            }
-
-            setIsLoading(true)
-
-            try {
-                const response = await fetch(`/api/airport/get-vehicles-dashboard?branchId=${selectedZone.branch_id}&zoneId=${selectedZone.zone_id}&vehicleId=${vehicleTypes.find(v => v.name === selectedType)?.id}`)
-                if (response.ok) {
-                    const data = await response.json()
-                    setVehicleList(data)
-                } else {
-                    console.error('Failed to fetch vehicle list');
-                }
-            } catch (error) {
-                console.error('Error fetching vehicle list:', error);
-            } finally {
-                setIsLoading(false)
-            }
-        }
-
-        fetchVehicles()
-    }, [selectedType, vehicleTypes]) // Dependency on selectedType and vehicleTypes
-
-    const handleDeleteVehicle = (vehicle: AirportVehicleDetail) => {
+    const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);
         setIsDialogOpen(true);
-    }
+    }, []);
 
-    const deleteVehicle = async (vehicle: AirportVehicleDetail) => {
+    const deleteVehicle = useCallback(async (vehicle: AirportVehicleDetail) => {
         try {
-            const response = await fetch(`/api/airport/delete-vehicles-airport?zoneId=${selectedZone.zone_id}&fleetId=${vehicle.fleet_id}`, {
-                method: 'GET',
-            });
-            if (response.ok) {
-                const data = await response.json()
-
-                console.log(data)
-                // Optionally, refresh the vehicle list or update state
-            } else {
-                console.error('Failed to delete vehicle');
-            }
+            await airportService.deleteVehicle(selectedZone.zone_id, vehicle.fleet_id);
+            await Promise.all([fetchUpdates(), fetchVehicles()]);
         } catch (error) {
             console.error('Error deleting vehicle:', error);
         }
-    }
+    }, [selectedZone.zone_id, fetchUpdates, fetchVehicles]);
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
@@ -134,20 +61,17 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
 
             {/* Vehicle List */}
             {/* Loading Indicator */}
-            {isLoading ? (
-                <div className="flex justify-center items-center h-full">
-                    <span className="text-xl font-bold">Cargando...</span>
-                </div>
-            ) : (
-                <VehicleListDetail vehicleList={vehicleList} handleDeleteVehicle={handleDeleteVehicle} />
-            )}
+            {isLoading ? (<LoadingMessage message='Cargando...' />) :
+                (<VehicleListDetail vehicleList={vehicleList}
+                    handleDeleteVehicle={handleDeleteVehicle} />)
+            }
 
             {/* New dialog for confirmation */}
-            <DeleteVehicleDialog 
-                open={isDialogOpen} 
-                onOpenChange={setIsDialogOpen} 
-                vehicleToDelete={vehicleToDelete} 
-                onDelete={deleteVehicle} 
+            <DeleteVehicleDialog
+                open={isDialogOpen}
+                onOpenChange={setIsDialogOpen}
+                vehicleToDelete={vehicleToDelete}
+                onDelete={deleteVehicle}
             />
         </div>
     )
@@ -239,10 +163,10 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
                 // Determine background color based on wait time
                 let bgColor = index % 2 === 0 ? 'bg-gray-50' : 'bg-white'; // Default color
 
-                if (waitTime && waitTime >= 10 && waitTime < maxWaitTime) {
-                    const intensity = Math.min((waitTime - 10) / (maxWaitTime - 10), 1); // Calculate intensity from 0 to 1
+                if (waitTime && waitTime >= 10 && waitTime < AIRPORT_CONSTANTS.MAX_WAIT_TIME) {
+                    const intensity = Math.min((waitTime - 10) / (AIRPORT_CONSTANTS.MAX_WAIT_TIME - 10), 1); // Calculate intensity from 0 to 1
                     bgColor = `bg-gradient-to-r from-yellow-200 to-red-200`; // opacity-${Math.max(10, Math.round(intensity * 100))}`; // Gradually change to red
-                } else if (waitTime && waitTime >= maxWaitTime) {
+                } else if (waitTime && waitTime >= AIRPORT_CONSTANTS.MAX_WAIT_TIME) {
                     bgColor = 'bg-gradient-to-r from-red-200 to-red-400/80'; // Full red if over max wait time
                 }
 
@@ -264,7 +188,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
                                         </>
                                     )}
                                 </div>
-                                <span className="text-base lg:text-xl xl:text-2xl text-center">{vehicle.fleet_name.trim()}</span>
+                                <span className="text-base lg:text-xl xl:text-2xl text-center">{fixName(vehicle.fleet_name)}</span>
                             </div>
                         </div>
                         <div className='vehicle-info flex flex-row items-center gap-4'>
@@ -326,20 +250,18 @@ function DeleteVehicleDialog({ open, onOpenChange, vehicleToDelete, onDelete }: 
                     <div className='flex flex-col gap-2 items-start'>
                         <div className='flex flex-row gap-1 items-center'>
                             <span className='font-semibold'>Número de Móvil:</span>
-                            <span>{ vehicleToDelete?.unique_car_id } ({vehicleToDelete?.tipo_contrato}) </span>
+                            <span>{vehicleToDelete?.unique_car_id} ({vehicleToDelete?.tipo_contrato}) </span>
                         </div>
                         <div className='flex flex-row gap-1 items-center'>
                             <span className='font-semibold'>Conductor:</span>
-                            <span>{ vehicleToDelete?.fleet_name } </span>
+                            <span>{vehicleToDelete?.fleet_name} </span>
                         </div>
                     </div>
                 </div>
                 <DialogFooter className='sm:justify-between'>
-                    <DialogClose>
-                        <Button variant='secondary' onClick={() => onOpenChange(false)}>
-                            Cancelar
-                        </Button>
-                    </DialogClose>
+                    <Button variant='secondary' onClick={() => onOpenChange(false)}>
+                        Cancelar
+                    </Button>
                     <Button variant='destructive' onClick={() => {
                         if (vehicleToDelete !== null) {
                             // Perform the deletion
@@ -352,4 +274,19 @@ function DeleteVehicleDialog({ open, onOpenChange, vehicleToDelete, onDelete }: 
             </DialogContent>
         </Dialog>
     );
+}
+
+function fixName(name: string) {
+    if (!name) return null
+
+    const fixedName = name
+        .trim()
+        .replaceAll("  ", " ")
+        .toLowerCase()
+        .split(" ")
+        .map(n => n[0].toUpperCase() + n.slice(1))
+        .join(" ")
+        .trim()
+
+    return fixedName
 }

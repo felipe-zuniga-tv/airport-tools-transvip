@@ -8,6 +8,12 @@ export interface AirportZone {
     zone_id: number;
 }
 
+export const AIRPORT_CONSTANTS = {
+  SECONDS_TO_UPDATE: 60,
+  MAX_WAIT_TIME: 15,
+  WAIT_TIME_WARNING: 10,
+} as const;
+
 export const airportZones: AirportZone[] = [
     { city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2 },
     { city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3 },

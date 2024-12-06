@@ -800,9 +800,9 @@ export async function deleteVehicleZonaIluminada(fleet_id: number, region_id: nu
         is_delete: 1,
     }
 
-    const { status, data } = await postResponseToURL(DELETE_VEHICLE_AIRPORT_ZONE_API_URL, request)
+    const response = await postResponseToURL(DELETE_VEHICLE_AIRPORT_ZONE_API_URL, request)
 
-    if (status !== 200) return null
+    if (response.status !== 200) return null
 
-    return data
+    return response
 }
