@@ -2,10 +2,11 @@ import { Routes } from "@/utils/routes";
 
 // Airport Zones
 export interface AirportZone {
-    city_name: string;
-    airport_code: string;
-    branch_id: number;
-    zone_id: number;
+    city_name: string
+    airport_code: string
+    branch_id: number
+    zone_id: number
+    enable_delete: boolean
 }
 
 export const AIRPORT_CONSTANTS = {
@@ -15,8 +16,8 @@ export const AIRPORT_CONSTANTS = {
 } as const;
 
 export const airportZones: AirportZone[] = [
-    { city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2 },
-    { city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3 },
+    { city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2, enable_delete: true },
+    { city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3, enable_delete: false },
 ]
 
 export const airportTools = [

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useCallback } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
@@ -12,7 +12,7 @@ import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
 import { BookingSearchDialog } from '../booking/booking-search-dialog'
 import { Button } from '../ui/button'
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, DialogClose } from '../ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { useAirportData } from '@/hooks/use-airport-data'
 import { useVehicleList } from '@/hooks/use-vehicle-list'
 import { airportService } from '@/services/airport'
@@ -63,7 +63,9 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
             {/* Loading Indicator */}
             {isLoading ? (<LoadingMessage message='Cargando...' />) :
                 (<VehicleListDetail vehicleList={vehicleList}
-                    handleDeleteVehicle={handleDeleteVehicle} />)
+                    handleDeleteVehicle={handleDeleteVehicle}
+                    enableDeleteButton={selectedZone.enable_delete}
+                    />)
             }
 
             {/* New dialog for confirmation */}
@@ -147,9 +149,10 @@ function VehicleListSummary({ vehicleList }: { vehicleList: AirportVehicleDetail
     )
 }
 
-function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
+function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButton }: {
     vehicleList: AirportVehicleDetail[]
     handleDeleteVehicle: (arg0: AirportVehicleDetail) => void
+    enableDeleteButton: boolean
 }) {
     if (!vehicleList || vehicleList.length === 0) {
         return <div className='w-full p-4 font-bold text-center text-3xl'>Sin resultados</div>
@@ -216,12 +219,14 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle }: {
                                     </div>
                                 </div>
                             </div>
-                            <Button
-                                variant={"default"}
-                                onClick={() => handleDeleteVehicle(vehicle)}
-                                className="text-red-500 hover:text-red-700 bg-white hover:bg-gray-200 w-12">
-                                <TrashIcon />
-                            </Button>
+                            { enableDeleteButton && (
+                                <Button
+                                    variant={"default"}
+                                    onClick={() => handleDeleteVehicle(vehicle)}
+                                    className="text-red-500 hover:text-red-700 bg-white hover:bg-gray-200 w-12">
+                                    <TrashIcon />
+                                </Button>
+                            )}
                         </div>
                     </div>
                 )
