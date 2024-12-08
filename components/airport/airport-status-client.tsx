@@ -25,7 +25,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     zone: AirportZone
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
-    const [selectedType, setSelectedType] = useState(vehicleTypesList ? vehicleTypesList[0].name : '');
+    const [selectedType, setSelectedType] = useState(vehicleTypesList.length ? vehicleTypesList[0].name : '');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
@@ -65,7 +65,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                 (<VehicleListDetail vehicleList={vehicleList}
                     handleDeleteVehicle={handleDeleteVehicle}
                     enableDeleteButton={selectedZone.enable_delete}
-                    />)
+                />)
             }
 
             {/* New dialog for confirmation */}
@@ -112,6 +112,8 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
     handleSelectedType: (arg0: string) => void
     selectedType: string
 }) {
+    if (vehicleTypes.length === 0) return
+
     return (
         <div className={`bg-white p-4 min-h-fit text-base md:text-2xl lg:text-xl flex flex-row justify-center items-center gap-4 overflow-x-auto snap-start`}>
             {vehicleTypes.map((vType: AirportVehicleType) => (
@@ -155,7 +157,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
     enableDeleteButton: boolean
 }) {
     if (!vehicleList || vehicleList.length === 0) {
-        return <div className='w-full p-4 font-bold text-center text-3xl'>Sin resultados</div>
+        return <div className='w-full p-4 font-bold text-center mt-12 text-3xl'>Sin resultados</div>
     }
 
     return (
