@@ -18,11 +18,12 @@ import { AIRPORT_CONSTANTS } from '@/lib/config/airport'
 import { AirportVehicleDetail, AirportVehicleType } from '@/lib/types'
 import { LoadingMessage } from '../ui/loading'
 import { useAirportStatus } from '@/hooks/use-airport-status'
-import { SuspenseSection } from '../ui/suspense'
+import { Session } from '@/lib/chat/types'
 
-export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId }: {
+export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId, session }: {
     vehicleTypesList: AirportVehicleType[]
     zone: AirportZone
+    session: Session
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
     const [selectedType, setSelectedType] = useState(vehicleTypesList.length ? vehicleTypesList[0].name : '');
@@ -48,10 +49,10 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     return (
         <div className="flex flex-col h-screen bg-gray-100">
             {/* Header */}
-            <AirportHeader selectedZone={selectedZone} />
+            <AirportHeader selectedZone={selectedZone} session={session} />
 
-            {isLoading ? (<LoadingMessage message='Cargando...' />) :
-            (
+            {isLoading && (<LoadingMessage message='Cargando...' />) }
+            {!isLoading && (
                 <>
                     {/* Vehicle Type Buttons */}
                     <VehicleTypes vehicleTypes={vehicleTypes}
@@ -81,8 +82,9 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
 }
 
 // New component for the header
-function AirportHeader({ selectedZone }: {
+function AirportHeader({ selectedZone, session }: {
     selectedZone: AirportZone
+    session: Session
 }) {
     return (
         <header className="bg-transvip/90 shadow-md p-3 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
@@ -102,7 +104,7 @@ function AirportHeader({ selectedZone }: {
                 </div>
             </div>
             <BookingSearchDialog />
-            <QRCodeGeneratorDialog />
+            <QRCodeGeneratorDialog session={session} />
             <LiveClock className='mx-auto md:ml-auto' />
         </header>
     )
