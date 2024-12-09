@@ -8,6 +8,11 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing zoneId' }, { status: 400 })
   }
 
-  const data = await getZonaIluminadaServices(parseInt(zoneId, 10))
-  return NextResponse.json(data)
+  try {
+    const data = await getZonaIluminadaServices(parseInt(zoneId, 10))
+    return NextResponse.json(data)
+  } catch (error) {
+    console.error('Error fetching zona iluminada services:', error)
+    return NextResponse.json({ status: 500, error: 'Failed to fetch services' })
+  }
 }
