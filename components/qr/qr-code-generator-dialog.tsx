@@ -13,10 +13,9 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { Session } from '@/lib/chat/types';
 
 export function QRCodeGeneratorDialog({ session } : {
-	session: Session 
+	session: any 
 }) {
 	const [bookingNumber, setBookingNumber] = useState<string>('');
 	const [errorMessage, setErrorMessage] = useState<string>('');
