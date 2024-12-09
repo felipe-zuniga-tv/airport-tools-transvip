@@ -30,7 +30,31 @@ export function useVehicleList(
                 selectedZone.zone_id,
                 selectedVehicleType.id
             );
-            setVehicleList(data);
+
+            // Initialize an array to store removed vehicles
+            let removedVehicles: any[] = [];
+
+            // Process data to keep only the latest entry_time per unique_car_id
+            let latestVehicles = data.reduce((acc: { [x: string]: any; }, vehicle: { unique_car_id: string | number; entry_time: string | number | Date; }) => {
+                const existingVehicle = acc[vehicle.unique_car_id];
+                if (!existingVehicle || new Date(vehicle.entry_time) < new Date(existingVehicle.entry_time)) {
+                    if (existingVehicle) {
+                        removedVehicles.push(existingVehicle);
+                    }
+                    acc[vehicle.unique_car_id] = {
+                        ...vehicle,
+                        vehicle_type: selectedVehicleType.name
+                    };
+                } else {
+                    removedVehicles.push(vehicle);
+                }
+                return acc;
+            }, {});
+
+            latestVehicles = Object.values(latestVehicles)
+
+            setVehicleList(latestVehicles);
+            // setVehicleList(data);
         } catch (error) {
             console.error('Error fetching vehicle list:', error);
             setVehicleList([]);

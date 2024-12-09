@@ -13,12 +13,11 @@ import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
 import { BookingSearchDialog } from '../booking/booking-search-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
-import { useAirportData } from '@/hooks/use-airport-data'
-import { useVehicleList } from '@/hooks/use-vehicle-list'
 import { airportService } from '@/services/airport'
 import { AIRPORT_CONSTANTS } from '@/lib/config/airport'
 import { AirportVehicleDetail, AirportVehicleType } from '@/lib/types'
 import { LoadingMessage } from '../ui/loading'
+import { useAirportStatus } from '@/hooks/use-airport-status'
 
 export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId }: {
     vehicleTypesList: AirportVehicleType[]
@@ -29,8 +28,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
-    const { vehicleTypes, isLoading, fetchUpdates } = useAirportData(selectedZone, AIRPORT_CONSTANTS.SECONDS_TO_UPDATE);
-    const { vehicleList, fetchVehicles } = useVehicleList(selectedZone, selectedType, vehicleTypes);
+    const { vehicleTypes, vehicleList, isLoading, fetchUpdates } = useAirportStatus(selectedZone, AIRPORT_CONSTANTS.SECONDS_TO_UPDATE);
 
     const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);
@@ -40,11 +38,11 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     const deleteVehicle = useCallback(async (vehicle: AirportVehicleDetail) => {
         try {
             await airportService.deleteVehicle(selectedZone.zone_id, vehicle.fleet_id);
-            await Promise.all([fetchUpdates(), fetchVehicles()]);
+            await fetchUpdates()
         } catch (error) {
             console.error('Error deleting vehicle:', error);
         }
-    }, [selectedZone.zone_id, fetchUpdates, fetchVehicles]);
+    }, [selectedZone.zone_id, fetchUpdates, fetchUpdates]);
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
@@ -57,12 +55,12 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                 handleSelectedType={(type) => setSelectedType(type)} />
 
             {/* Vehicle List Summary / With - without pax */}
-            <VehicleListSummary vehicleList={vehicleList} />
+            <VehicleListSummary vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)} />
 
             {/* Vehicle List */}
             {/* Loading Indicator */}
             {isLoading ? (<LoadingMessage message='Cargando...' />) :
-                (<VehicleListDetail vehicleList={vehicleList}
+                (<VehicleListDetail vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)}
                     handleDeleteVehicle={handleDeleteVehicle}
                     enableDeleteButton={selectedZone.enable_delete}
                 />)

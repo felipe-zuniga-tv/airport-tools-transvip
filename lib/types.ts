@@ -2,7 +2,7 @@ import { AirportZone } from "./config/airport";
 
 export interface AirportVehicleType {
     id: number[];
-    count: number;
+    count: number | null;
     vehicle_image: string;
     name: string;
 }
@@ -17,6 +17,7 @@ export interface AirportVehicleDetail {
     entry_time: string;
     total_passengers: number;
     passenger_entry_time: string;
+    vehicle_type: string
 }
 
 export interface Props {
