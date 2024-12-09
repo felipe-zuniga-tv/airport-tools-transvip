@@ -50,32 +50,32 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
             {/* Header */}
             <AirportHeader selectedZone={selectedZone} />
 
-            {/* Vehicle Type Buttons */}
-            {isLoading ? (<SuspenseSection text='Cargando...' />) :
-                (<VehicleTypes vehicleTypes={vehicleTypes}
-                    selectedType={selectedType || ''}
-                    handleSelectedType={(type) => setSelectedType(type)} />
-            )}
-
-            {/* Vehicle List Summary / With - without pax */}
-            <VehicleListSummary vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)} />
-
-            {/* Vehicle List */}
-            {/* Loading Indicator */}
             {isLoading ? (<LoadingMessage message='Cargando...' />) :
-                (<VehicleListDetail vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)}
-                    handleDeleteVehicle={handleDeleteVehicle}
-                    enableDeleteButton={selectedZone.enable_delete}
-                />)
-            }
-
-            {/* New dialog for confirmation */}
-            <DeleteVehicleDialog
-                open={isDialogOpen}
-                onOpenChange={setIsDialogOpen}
-                vehicleToDelete={vehicleToDelete}
-                onDelete={deleteVehicle}
-            />
+            (
+                <>
+                    {/* Vehicle Type Buttons */}
+                    <VehicleTypes vehicleTypes={vehicleTypes}
+                        selectedType={selectedType || ''}
+                        handleSelectedType={(type) => setSelectedType(type)} />
+        
+                    {/* Vehicle List Summary / With - without pax */}
+                    <VehicleListSummary vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)} />
+        
+                    {/* Vehicle List */}
+                    <VehicleListDetail vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)}
+                        handleDeleteVehicle={handleDeleteVehicle}
+                        enableDeleteButton={selectedZone.enable_delete}
+                    />
+        
+                    {/* New dialog for confirmation */}
+                    <DeleteVehicleDialog
+                        open={isDialogOpen}
+                        onOpenChange={setIsDialogOpen}
+                        vehicleToDelete={vehicleToDelete}
+                        onDelete={deleteVehicle}
+                    />
+                </>
+            )}
         </div>
     )
 }
@@ -87,7 +87,7 @@ function AirportHeader({ selectedZone }: {
     return (
         <header className="bg-transvip/90 shadow-md p-3 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
             <div className='w-full flex flex-row items-center justify-center sm:justify-start gap-4'>
-                <TransvipLogo size={36} colored={false} logoOnly={true} className='hidden' />
+                <TransvipLogo size={36} colored={false} logoOnly={true} className='' />
                 <div className='flex flex-col gap-1 justify-start'>
                     <div className='flex flex-row gap-1 items-center justify-center md:justify-start w-full'>
                         <span className="text-xl lg:text-2xl font-bold text-white">Zona Iluminada</span>
@@ -120,7 +120,7 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
             {vehicleTypes.map((vType: AirportVehicleType) => (
                 <div key={vType.name}
                     onClick={() => handleSelectedType(vType.name)}
-                    className={cn('w-[212px] h-[128px] shadow-md flex flex-col items-center justify-center p-4 rounded-lg transition-colors',
+                    className={cn('w-[212px] h-[128px] shadow-xl flex flex-col items-center justify-center p-4 rounded-lg transition-colors',
                         selectedType === vType.name ? 'bg-slate-700 hover:bg-slate-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     )}>
                     <div className='flex flex-col items-center gap-2 justify-center'>
@@ -184,7 +184,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                         )}>
                         <div className='vehicle-index-driver flex flex-row gap-2 items-center justify-start z-10'>
                             <div className='vehicle-index font-semibold text-3xl w-[30px] text-center'>{index + 1}</div>
-                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[320px] lg:w-[400px]'>
+                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[320px] lg:w-[400px] xl:w-[460px]'>
                                 <div className='flex flex-row gap-1 justify-center items-center'>
                                     <span className="font-semibold">{vehicle.unique_car_id}{vehicle.tipo_contrato === 'Leasing' ? 'L' : ''}</span>
                                     {vehicle.name.includes('*') && (

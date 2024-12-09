@@ -12,6 +12,8 @@ export function useAirportStatus(selectedZone: AirportZone, secondsToUpdate: num
         try {
             setIsLoading(true);
             const typesData = await airportService.refreshDashboard(selectedZone.zone_id);
+            // console.log(typesData);
+            
             setVehicleTypes(typesData);
 
             const allVehicleLists = await Promise.all(
@@ -21,27 +23,41 @@ export function useAirportStatus(selectedZone: AirportZone, secondsToUpdate: num
                         selectedZone.zone_id,
                         type.id
                     );
-                    const vehiclesWithType = data.map((vehicle: AirportVehicleDetail) => ({
+                    
+                    return data.map((vehicle: AirportVehicleDetail) => ({
                         ...vehicle,
                         vehicle_type: type.name
                     }));
-                    const latestEntries = Object.values(
-                        vehiclesWithType.reduce((acc: Record<string, AirportVehicleDetail>, curr: AirportVehicleDetail) => {
-                            if (!acc[curr.unique_car_id] || new Date(curr.entry_time) > new Date(acc[curr.unique_car_id].entry_time)) {
-                                acc[curr.unique_car_id] = curr;
-                            }
-                            return acc;
-                        }, {})
-                    );
-                    return latestEntries;
                 })
-            );
+            ).then(lists => {
+                // Flatten the array and reduce to keep only latest entries
+                const flatList = lists.flat();
+                const vehicleMap = new Map<string, AirportVehicleDetail>();
+                
+                for (const vehicle of flatList) {
+                    const existing = vehicleMap.get(vehicle.unique_car_id);
+                    if (!existing || new Date(vehicle.entry_time) > new Date(existing.entry_time)) {
+                        vehicleMap.set(vehicle.unique_car_id, vehicle);
+                    }
+                }
+                
+                // Convert to array and sort by vehicle_type and entry_time
+                return Array.from(vehicleMap.values())
+                    .sort((a, b) => {
+                        // First sort by vehicle_type
+                        if (a.vehicle_type !== b.vehicle_type) {
+                            return a.vehicle_type.localeCompare(b.vehicle_type);
+                        }
+                        // Then sort by entry_time (most recent first)
+                        return new Date(a.entry_time).getTime() - new Date(b.entry_time).getTime();
+                    });
+            });
 
-            const combinedVehicleList = allVehicleLists.flat();
-            setVehicleList(combinedVehicleList);
+            setVehicleList(allVehicleLists);
+
             // Update vehicle types with counts
             const updatedVehicleTypes = typesData.map((type: AirportVehicleType) => {
-                const count = combinedVehicleList.filter((vehicle: AirportVehicleDetail) => vehicle.vehicle_type === type.name).length;
+                const count = allVehicleLists.filter((vehicle: AirportVehicleDetail) => vehicle.vehicle_type === type.name).length;
                 return { ...type, count };
             });
             setVehicleTypes(updatedVehicleTypes);
