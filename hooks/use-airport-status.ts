@@ -21,10 +21,19 @@ export function useAirportStatus(selectedZone: AirportZone, secondsToUpdate: num
                         selectedZone.zone_id,
                         type.id
                     );
-                    return data.map((vehicle: AirportVehicleDetail) => ({
+                    const vehiclesWithType = data.map((vehicle: AirportVehicleDetail) => ({
                         ...vehicle,
                         vehicle_type: type.name
                     }));
+                    const latestEntries = Object.values(
+                        vehiclesWithType.reduce((acc: Record<string, AirportVehicleDetail>, curr: AirportVehicleDetail) => {
+                            if (!acc[curr.unique_car_id] || new Date(curr.entry_time) > new Date(acc[curr.unique_car_id].entry_time)) {
+                                acc[curr.unique_car_id] = curr;
+                            }
+                            return acc;
+                        }, {})
+                    );
+                    return latestEntries;
                 })
             );
 

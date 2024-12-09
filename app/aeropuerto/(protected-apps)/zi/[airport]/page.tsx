@@ -1,5 +1,5 @@
 import { Suspense } from 'react'
-import SuspenseLoading from '@/components/ui/suspense'
+import { SuspenseLoading } from '@/components/ui/suspense'
 import AirportStatusClient from '@/components/airport/airport-status-client'
 import { getZonaIluminadaServices } from '@/lib/chat/functions'
 import { AirportZone, airportZones } from '@/lib/config/airport'
@@ -17,7 +17,6 @@ export default async function AirportPage({ params }: { params: Promise<{ airpor
 
 async function AirportStatusDashboard({ zone }: { zone: AirportZone }) {
     const data = await getZonaIluminadaServices(zone.zone_id)
-    console.log(data);
     // console.log(zone);
     
     return <AirportStatusClient vehicleTypesList={data} zone={zone} />

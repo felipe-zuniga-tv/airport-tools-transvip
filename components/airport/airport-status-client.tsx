@@ -18,6 +18,7 @@ import { AIRPORT_CONSTANTS } from '@/lib/config/airport'
 import { AirportVehicleDetail, AirportVehicleType } from '@/lib/types'
 import { LoadingMessage } from '../ui/loading'
 import { useAirportStatus } from '@/hooks/use-airport-status'
+import { SuspenseSection } from '../ui/suspense'
 
 export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId }: {
     vehicleTypesList: AirportVehicleType[]
@@ -50,9 +51,11 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
             <AirportHeader selectedZone={selectedZone} />
 
             {/* Vehicle Type Buttons */}
-            <VehicleTypes vehicleTypes={vehicleTypes}
-                selectedType={selectedType || ''}
-                handleSelectedType={(type) => setSelectedType(type)} />
+            {isLoading ? (<SuspenseSection text='Cargando...' />) :
+                (<VehicleTypes vehicleTypes={vehicleTypes}
+                    selectedType={selectedType || ''}
+                    handleSelectedType={(type) => setSelectedType(type)} />
+            )}
 
             {/* Vehicle List Summary / With - without pax */}
             <VehicleListSummary vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)} />
@@ -113,7 +116,7 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
     if (vehicleTypes.length === 0) return
 
     return (
-        <div className={`bg-white p-4 min-h-fit text-base md:text-2xl lg:text-xl flex flex-row justify-center items-center gap-4 overflow-x-auto snap-start`}>
+        <div className={`bg-white p-4 h-[160px] text-base md:text-2xl lg:text-xl flex flex-row justify-center items-center gap-4 overflow-x-scroll_ snap-start`}>
             {vehicleTypes.map((vType: AirportVehicleType) => (
                 <div key={vType.name}
                     onClick={() => handleSelectedType(vType.name)}
@@ -179,7 +182,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                             'text-slate-900',
                             bgColor
                         )}>
-                        <div className='vehicle-index-driver flex flex-row gap-1 items-center justify-start z-10'>
+                        <div className='vehicle-index-driver flex flex-row gap-2 items-center justify-start z-10'>
                             <div className='vehicle-index font-semibold text-3xl w-[30px] text-center'>{index + 1}</div>
                             <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[320px] lg:w-[400px]'>
                                 <div className='flex flex-row gap-1 justify-center items-center'>
