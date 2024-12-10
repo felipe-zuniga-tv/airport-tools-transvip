@@ -2,8 +2,15 @@
 import { Button } from "@/components/ui/button"
 import { Routes } from "@/utils/routes";
 import Link from "next/link";
+import { useEffect } from "react";
 
-export default function Error() {
+export default function Error({ error }: {
+  error: Error & { digest?: string }
+}) {
+  useEffect(() => {
+    // Log the error to an error reporting service
+    console.error(error)
+  }, [error])
 
   return (
     <main className="bg-desert min-h-screen flex flex-col items-center justify-center">
