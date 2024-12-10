@@ -185,7 +185,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                         )}>
                         <div className='vehicle-index-driver flex flex-row gap-2 items-center justify-start z-10'>
                             <div className='vehicle-index font-semibold text-3xl w-[30px] text-center'>{index + 1}</div>
-                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[320px] lg:w-[400px] xl:w-[460px]'>
+                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[220px] lg:w-[360px] xl:w-[460px]'>
                                 <div className='flex flex-row gap-1 justify-center items-center'>
                                     <span className="font-semibold">{vehicle.unique_car_id}{vehicle.tipo_contrato === 'Leasing' ? 'L' : ''}</span>
                                     {vehicle.name.includes('*') && (
