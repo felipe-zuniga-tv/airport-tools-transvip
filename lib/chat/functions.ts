@@ -768,7 +768,7 @@ export async function getAirportStatus(branchId : number, zoneId: number, vehicl
     const currentUser = session?.user as any
     const accessToken = currentUser?.accessToken as string
 
-    // const branchId = branches.filter(x => x.name === cityName)[0].branch_id
+    if (!session) return null
 
     const params = [
         `access_token=${accessToken}`,
