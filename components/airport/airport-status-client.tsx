@@ -91,9 +91,9 @@ function AirportHeader({ selectedZone, session }: {
                 <TransvipLogo size={36} colored={false} logoOnly={true} className='' />
                 <div className='flex flex-col gap-1 justify-start'>
                     <div className='flex flex-row gap-1 items-center justify-center md:justify-start w-full'>
-                        <span className="text-xl lg:text-2xl font-bold text-white">Zona Iluminada</span>
-                        <span className="text-xl lg:text-2xl font-bold text-white">·</span>
-                        <span className="text-xl lg:text-2xl font-bold text-white">{selectedZone.city_name}</span>
+                        <span className="text-lg lg:text-xl font-bold text-white">Zona Iluminada</span>
+                        <span className="text-lg lg:text-xl font-bold text-white">·</span>
+                        <span className="text-lg lg:text-xl font-bold text-white">{selectedZone.city_name}</span>
                     </div>
                     <span className='bg-transvip-dark hover:bg-orange-900 p-1 px-4 rounded-full w-fit'>
                         <Link href={Routes.AIRPORT.HOME} className='text-xs text-white font-semibold flex gap-0 items-center'>
