@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { 
-//  updateSession, 
-  updateSessionB
+  updateSession, 
+//  updateSessionB
 } from "./lib/auth";
 // import { Routes } from "./utils/routes"
 
 export async function middleware(request: NextRequest) {
   try {
-    return await updateSessionB(request);
+    return await updateSession(request);
   } catch (error) {
     console.error('Middleware session update error:', error);
     return NextResponse.next();

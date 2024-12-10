@@ -293,6 +293,7 @@ function fixName(name: string) {
         .replaceAll("  ", " ")
         .toLowerCase()
         .split(" ")
+        .filter(p => p !== '')
         .map(n => n[0].toUpperCase() + n.slice(1))
         .join(" ")
         .trim()
