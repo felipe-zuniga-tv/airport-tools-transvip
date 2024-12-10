@@ -12,6 +12,8 @@ export function useAirportStatus(selectedZone: AirportZone, secondsToUpdate: num
         try {
             setIsLoading(true);
             const typesData = await airportService.refreshDashboard(selectedZone.zone_id);
+
+            if (!typesData) return null
             // console.log(typesData);
             
             setVehicleTypes(typesData);
