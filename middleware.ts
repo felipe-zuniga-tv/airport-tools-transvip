@@ -5,9 +5,9 @@ import { Routes } from "./utils/routes";
 export async function middleware(request: NextRequest) {
   try {
     const response = await updateSession(request);
-    console.log(`Middleware: ${response}`)
-
+    
     if (!response)
+      console.log(`No session found`)
       return NextResponse.redirect(new URL(Routes.LOGIN, request.url))
     
     return response
