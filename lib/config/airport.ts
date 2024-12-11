@@ -18,12 +18,13 @@ export const AIRPORT_CONSTANTS = {
 export const airportZones: AirportZone[] = [
   { city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2, enable_delete: true },
   { city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3, enable_delete: false },
+  { city_name: 'Calama', airport_code: 'CJC', branch_id: 179, zone_id: 5, enable_delete: false },
 ]
 
 export const airportTools = [
   { name: 'Zona Iluminada SCL', href: Routes.AIRPORT.ZI_SCL, active: true },
   { name: 'Zona Iluminada ANF', href: Routes.AIRPORT.ZI_ANF, active: true },
-  { name: 'Zona Iluminada CJC', href: Routes.AIRPORT.ZI_SCL, active: false },
+  { name: 'Zona Iluminada CJC', href: Routes.AIRPORT.ZI_CJC, active: true },
   { name: 'Crear código QR', href: Routes.QR_GEN, active: false },
   { name: 'Reservas Programadas', href: '#', active: false },
 ]; // Add more tools as needed
