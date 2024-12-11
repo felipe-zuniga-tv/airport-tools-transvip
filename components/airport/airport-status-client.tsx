@@ -185,7 +185,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                         )}>
                         <div className='vehicle-index-driver flex flex-row gap-2 items-center justify-start z-10'>
                             <div className='vehicle-index font-semibold text-3xl w-[30px] text-center'>{index + 1}</div>
-                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[220px] lg:w-[360px] xl:w-[460px]'>
+                            <div className='vehicle-driver flex flex-col gap-1 justify-center items-center w-[200px] lg:w-[360px] xl:w-[460px]'>
                                 <div className='flex flex-row gap-1 justify-center items-center'>
                                     <span className="font-semibold">{vehicle.unique_car_id}{vehicle.tipo_contrato === 'Leasing' ? 'L' : ''}</span>
                                     {vehicle.name.includes('*') && (
@@ -200,26 +200,26 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                         </div>
                         <div className='vehicle-info flex flex-row items-center gap-4'>
                             <div className='vehicle-in-zone mx-auto flex flex-col gap-1 justify-center items-center'>
-                                <span className='text-center font-semibold'>Tiempo en ZI</span>
+                                <span className='text-center font-semibold'>Hora de Entrada</span>
                                 <div className='flex flex-row gap-1 items-center justify-center'>
                                     <span className="text-center">{format(new Date(vehicle.entry_time), 'dd-MM HH:mm')}</span>
-                                    <span className="">·</span>
-                                    <span className="text-center text-slate-600">{calculateDuration(vehicle.entry_time)} min</span>
+                                    <span className="hidden">·</span>
+                                    <span className="hidden text-center text-slate-600">{calculateDuration(vehicle.entry_time)} min</span>
                                 </div>
                             </div>
                         </div>
                         <div className='flex flex-row gap-2 items-center'>
                             <div className='vehicle-pax flex flex-col gap-2 items-center justify-center w-[170px] lg:w-[220px]'>
-                                <span className='font-semibold'>Pasajeros</span>
-                                <div className='flex flex-row gap-4 items-center'>
+                                <span className='font-semibold hidden'>Pasajeros</span>
+                                <div className='flex flex-col gap-2 items-center text-xl'>
                                     <div className='flex flex-row gap-1 justify-start items-center'>
                                         <span className='text-center font-semibold'><Clock className='h-5 w-5' /></span>
                                         <span className="text-center">{vehicle.passenger_entry_time ? `${calculateDuration(vehicle.passenger_entry_time)} min` : '- min'}</span>
                                     </div>
-                                    <span>·</span>
+                                    <span className='hidden'>·</span>
                                     <div className='flex flex-row gap-1 justify-start items-center'>
                                         <span className='text-center font-semibold'><Users className='h-5 w-5' /></span>
-                                        <span className="text-center">{vehicle.total_passengers ? Math.max(0, vehicle.total_passengers) : 0}</span>
+                                        <span className="text-center">{vehicle.total_passengers ? Math.max(0, vehicle.total_passengers) : 0} pax</span>
                                     </div>
                                 </div>
                             </div>

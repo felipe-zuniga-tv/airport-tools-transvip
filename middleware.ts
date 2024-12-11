@@ -1,9 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { 
-  updateSession, 
-//  updateSessionB
-} from "./lib/auth";
-// import { Routes } from "./utils/routes"
+import { updateSession } from "./lib/auth";
 
 export async function middleware(request: NextRequest) {
   try {
