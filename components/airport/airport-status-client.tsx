@@ -203,8 +203,8 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                                 <span className='text-center font-semibold'>Hora de Entrada</span>
                                 <div className='flex flex-row gap-1 items-center justify-center'>
                                     <span className="text-center">{format(new Date(vehicle.entry_time), 'dd-MM HH:mm')}</span>
-                                    <span className="hidden">·</span>
-                                    <span className="hidden text-center text-slate-600">{calculateDuration(vehicle.entry_time)} min</span>
+                                    <span className="">·</span>
+                                    <span className="text-center text-slate-600">{calculateDuration(vehicle.entry_time)} min</span>
                                 </div>
                             </div>
                         </div>
