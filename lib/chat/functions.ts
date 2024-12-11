@@ -3,6 +3,7 @@ import { getSession } from "../auth";
 import { branches } from "../config/transvip-general";
 import { VEHICLE_STATUS } from "../utils";
 import { IBookingInfoOutput, IBookingInfo, IDriverProfile, IVehicleDetail } from './types'
+import { AirportVehicleType } from "../types";
 
 // URLs
 const VEHICLE_STATUS_API_URL                = buildAPIUrl(process.env.GET_VEHICLE_STATUS);
@@ -785,7 +786,7 @@ export async function getAirportStatus(branchId : number, zoneId: number, vehicl
 
     const { result } = data
 
-    return result
+    return result as AirportVehicleType[]
 }
 
 export async function deleteVehicleZonaIluminada(fleet_id: number, region_id: number) {

@@ -25,7 +25,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     session: any
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
-    const [selectedType, setSelectedType] = useState(vehicleTypesList.length ? vehicleTypesList[0].name : '');
+    const [selectedType, setSelectedType] = useState(vehicleTypesList && vehicleTypesList.length ? vehicleTypesList[0].name : '');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
@@ -114,7 +114,7 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
     handleSelectedType: (arg0: string) => void
     selectedType: string
 }) {
-    if (vehicleTypes.length === 0) return
+    if (!vehicleTypes || vehicleTypes.length === 0) return
 
     return (
         <div className={`bg-white p-4 h-[160px] text-base md:text-2xl lg:text-xl flex flex-row justify-center items-center gap-4 overflow-x-scroll_ snap-start`}>
