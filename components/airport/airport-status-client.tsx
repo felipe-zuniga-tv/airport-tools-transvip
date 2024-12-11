@@ -163,7 +163,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
     }
 
     return (
-        <div className="flex flex-col flex-grow overflow-auto p-3 w-full text-base gap-4 lg:text-xl xl:text-2xl">
+        <div className="flex flex-col flex-grow overflow-auto p-3 w-full gap-4 text-xl lg:text-2xl">
             {vehicleList.map((vehicle, index) => {
                 const waitTime = vehicle.passenger_entry_time ? calculateDuration(vehicle.passenger_entry_time) : null
 
@@ -211,7 +211,7 @@ function VehicleListDetail({ vehicleList, handleDeleteVehicle, enableDeleteButto
                         <div className='flex flex-row gap-2 items-center'>
                             <div className='vehicle-pax flex flex-col gap-2 items-center justify-center w-[170px] lg:w-[220px]'>
                                 <span className='font-semibold hidden'>Pasajeros</span>
-                                <div className='flex flex-col gap-2 items-center text-xl'>
+                                <div className='flex flex-col gap-2 items-center'>
                                     <div className='flex flex-row gap-1 justify-start items-center'>
                                         <span className='text-center font-semibold'><Clock className='h-5 w-5' /></span>
                                         <span className="text-center">{vehicle.passenger_entry_time ? `${calculateDuration(vehicle.passenger_entry_time)} min` : '- min'}</span>
