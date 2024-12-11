@@ -9,6 +9,7 @@ export const Routes = Object.freeze({
         ZI_SCL: '/aeropuerto/zi/scl',
         ZI_ANF: '/aeropuerto/zi/anf',
         ZI_CJC: '/aeropuerto/zi/cjc',
+        ZI_CJC_LOS_OLIVOS: '/aeropuerto/zi/cjc2',
     }
 })
 
