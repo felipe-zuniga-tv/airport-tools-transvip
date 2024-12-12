@@ -30,7 +30,7 @@ export function QRCodeGeneratorDialog({ session } : {
 			return;
 		}
 
-		const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"wgiw.transvip.cl/"}`);
+		const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"www.transvip.cl/"}`);
 		const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${qrData}&margin=10`;
 		setQrCodeUrl(qrUrl);
 		setIsQrVisible(true);
