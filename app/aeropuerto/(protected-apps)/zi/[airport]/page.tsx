@@ -10,7 +10,7 @@ const DEFAULT_AIRPORT_ZONE = airportZones.filter(a => a.city_name === 'Santiago'
 export default async function AirportPage({ params }: { params: Promise<{ airport: string }> }) {
   const airport = (await params).airport
   let airportZoneFilter = airportZones.filter(a => a.airport_code === airport.toUpperCase())
-  const airportZone = airportZoneFilter ? airportZoneFilter[0] : DEFAULT_AIRPORT_ZONE
+  const airportZone = airportZoneFilter && airportZoneFilter.length ? airportZoneFilter[0] : DEFAULT_AIRPORT_ZONE
 
   return (
     <Suspense fallback={<SuspenseLoading />}>
