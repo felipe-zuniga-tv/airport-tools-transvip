@@ -22,7 +22,7 @@ export default async function AirportPage({ params }: { params: Promise<{ airpor
 async function AirportStatusDashboard({ zone }: { zone: AirportZone }) {
   const session = await getSession()
   const data = await getZonaIluminadaServices(zone.zone_id)
-  console.log(`Servicios ZI: ${data.length}`);
+  // console.log(`Servicios ZI: ${data.length}`);
 
   return <AirportStatusClient vehicleTypesList={data} zone={zone} session={session} />
 }
