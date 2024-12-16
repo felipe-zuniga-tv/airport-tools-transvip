@@ -782,10 +782,12 @@ export async function getAirportStatus(branchId : number, zoneId: number, vehicl
 
     const { status, data } = await getResponseFromURL(`${AIRPORT_ZONE_API_URL}?${params}`)
 
+    // Return Checks
     if (status !== 200) return null
 
-    const { result } = data
+    if (!data) return [] as AirportVehicleType[]
 
+    const { result } = data
     return result as AirportVehicleType[]
 }
 

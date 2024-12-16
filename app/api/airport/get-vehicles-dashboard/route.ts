@@ -10,6 +10,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: 'Missing query parameters' }, { status: 400 })
     }
 
-    const data = await getAirportStatus(parseInt(branchId, 10), parseInt(zoneId, 10), vehicleIdList)   
+    const data = await getAirportStatus(parseInt(branchId), parseInt(zoneId), vehicleIdList)   
     return NextResponse.json(data)
 }
