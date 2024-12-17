@@ -13,6 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { IBookingInfoOutput } from '@/lib/chat/types';
 
 export function QRCodeGeneratorDialog({ session } : {
 	session: any 
@@ -21,32 +22,65 @@ export function QRCodeGeneratorDialog({ session } : {
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 	const [isQrVisible, setIsQrVisible] = useState<boolean>(false);
+	const [passengerName, setPassengerName] = useState<string | null>(null);
+	const [destinationAddress, setDestinationAddress] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState<boolean>(false);
 
 	const generateQRCode = async () => {
 		setErrorMessage('');
+		setIsLoading(true);
+
+		// Reset passenger name and destination address
+		setPassengerName(null);
+		setDestinationAddress(null);
 
 		if (!bookingNumber) {
 			setErrorMessage('Ingresa un número de reserva');
+			setIsLoading(false);
 			return;
 		}
 
 		const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"www.transvip.cl/"}`);
-		const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${qrData}&margin=10`;
+		const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=450x450&data=${qrData}&margin=10`;
 		setQrCodeUrl(qrUrl);
 		setIsQrVisible(true);
 
 		// Log the QR code generation
-        await fetch('/api/logs/qr-code', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                booking_id: bookingNumber,
+		await fetch('/api/logs/qr-code', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({
+				booking_id: bookingNumber,
 				user: session.user.email,
-                timestamp: new Date().toISOString(),
-            }),
-        });
+				timestamp: new Date().toISOString(),
+			}),
+		});
+
+		// Fetch booking info after generating the QR code
+		const bookingInfoResponse = await fetch('/api/booking/get-booking-info', {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify({ bookingId: bookingNumber }), // Adjust isShared as needed
+		});
+
+		setIsLoading(false);
+
+		if (bookingInfoResponse.ok) {
+			const bookingInfo = await bookingInfoResponse.json();
+			console.log(bookingInfo)
+			if (bookingInfo.status === 200) {
+				setPassengerName(bookingInfo[0].customer.full_name)
+				setDestinationAddress(bookingInfo[0].directions.destination.address);
+			} else {
+				setErrorMessage('Reserva no encontrada')
+			}
+		} else {
+			setErrorMessage('Error fetching booking information');
+		}
 	};
 
 	const handleStartOver = () => {
@@ -57,11 +91,11 @@ export function QRCodeGeneratorDialog({ session } : {
 	};
 
 	return (
-		<Dialog>
+		<Dialog onOpenChange={(open) => { if (!open) handleStartOver(); }}>
 			<DialogTrigger asChild>
 				<Button variant="default"><QrCode /> Generar QR</Button>
 			</DialogTrigger>
-			<DialogContent className="sm:max-w-[425px]">
+			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
 					<DialogTitle>Generar Código QR</DialogTitle>
 					<DialogDescription>
@@ -69,26 +103,41 @@ export function QRCodeGeneratorDialog({ session } : {
 					</DialogDescription>
 				</DialogHeader>
 				<div className='flex flex-col gap-4'>
-					<input
-						type="number"
-						value={bookingNumber}
-						onChange={(e) => setBookingNumber(e.target.value)}
-						placeholder="Ingresa el número de reserva"
-						className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
-					/>
-					<Button variant={"default"} onClick={generateQRCode}
-						className="mx-auto px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600 transition duration-300"
-					>
-						Generar código QR
-					</Button>
+					<div className='flex flex-row gap-2 items-center'>
+						<input
+							type="number"
+							value={bookingNumber}
+							onChange={(e) => setBookingNumber(e.target.value)}
+							placeholder="Número de reserva"
+							className="w-full p-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
+						/>
+						<button onClick={generateQRCode}
+							className="mx-auto min-w-fit px-4 py-2 text-lg bg-transvip text-white rounded-md hover:bg-transvip-dark"
+						>
+							Generar QR
+						</button>
+					</div>
 					{errorMessage && <div className='text-center text-red-500'>{errorMessage}</div>}
+					{isLoading && <div className='text-center'>Cargando...</div>}
 					{isQrVisible && qrCodeUrl && (
-						<div className="my-6 mx-auto">
-							<Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mx-auto" />
+						<div className="mx-auto flex flex-col gap-2 items-center justify-center">
+							{passengerName && (
+								<div className='flex flex-row gap-1 items-center'>
+									<span className="block text-center font-semibold">Pasajero:</span>
+									<span className="block text-center">{passengerName}</span>
+								</div>
+							)}
+							{destinationAddress && (
+								<div className='flex flex-row gap-1 items-center'>
+									<span className="block text-center font-semibold">Destino:</span>
+									<span className="block text-center">{destinationAddress}</span>
+								</div>
+							)}
+							<Image height={450} width={450} src={qrCodeUrl} alt='Código QR Generado' className="mx-auto" />
 						</div>
 					)}
 				</div>
-				<DialogFooter className='mt-6'>
+				<DialogFooter className='mt-2'>
 					<Button type="button" onClick={handleStartOver} className="px-4 py-2 bg-gray-500 text-white text-xs rounded-md hover:bg-gray-600 transition duration-300 min-w-fit">
 						Empezar de nuevo
 						<RotateCw className='ml-2 h-4 w-4' />

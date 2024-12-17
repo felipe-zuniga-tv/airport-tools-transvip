@@ -39,7 +39,7 @@ export function BookingSearchDialog() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ bookingId, isShared: false }), // Adjust isShared as needed
+                body: JSON.stringify({ bookingId }), // Adjust isShared as needed
             });
 
             if (!response.ok) {

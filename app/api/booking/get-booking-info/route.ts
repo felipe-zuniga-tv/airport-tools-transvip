@@ -1,14 +1,14 @@
 import { getBookingInfo } from '@/lib/chat/functions';
 
 export async function POST(request: Request) {
-  const { bookingId, isShared } = await request.json()
+  const { bookingId } = await request.json()
 
   if (!bookingId) {
     return Response.json({ status: 404, message: 'Booking ID is required' });
   }
 
   try {
-    const bookingInfo = await getBookingInfo(Number(bookingId), isShared);
+    const bookingInfo = await getBookingInfo(Number(bookingId));
     if (!bookingInfo) {
       return Response.json({ status: 404, message: 'Booking not found' });
     }
