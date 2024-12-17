@@ -705,7 +705,7 @@ export async function getZonaIluminadaServices(zone_id: number) {
 
     const { status, data } = await getResponseFromURL(`${ZONA_ILUMINADA_SERVICES}?${params}`)
 
-    if (status !== 200) return
+    if (!status || status !== 200) return
 
     const { data: results } = data
 
