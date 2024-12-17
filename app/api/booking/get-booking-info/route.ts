@@ -14,7 +14,7 @@ export async function POST(request: Request) {
     }
     return Response.json(bookingInfo)
   } catch (error) {
-    console.error(error);
-    return Response.json({ status: 500, message: 'Internal server error' });
+    console.error('Booking Info was not obtained', error);
+    return Response.json({ status: 500, message: 'Internal server error', error });
   }
 }

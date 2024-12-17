@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     
     return NextResponse.json({ status: 404, error: 'No services found', data: null })
   } catch (error) {
-    console.error('Error fetching zona iluminada services:', error)
+    console.error('Error refreshing zona iluminada services:', error)
     return NextResponse.json({ status: 500, error: 'Failed to fetch services' })
   }
 }

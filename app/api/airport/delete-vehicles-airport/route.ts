@@ -17,7 +17,7 @@ export async function GET(request: NextRequest) {
     }
     return Response.json(result)
   } catch (error) {
-    console.error(error);
-    return Response.json({ status: 500, message: 'Internal server error' });
+    console.error('Vehicle was not deleted from ZI', error);
+    return Response.json({ status: 500, message: 'Vehicle was not deleted', error: error });
   }
 }

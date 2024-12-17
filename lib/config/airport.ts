@@ -2,6 +2,7 @@ import { Routes } from "@/utils/routes";
 
 // Airport Zones
 export interface AirportZone {
+  active: boolean
   city_name: string
   airport_code: string
   branch_id: number
@@ -17,10 +18,10 @@ export const AIRPORT_CONSTANTS = {
 } as const;
 
 export const airportZones: AirportZone[] = [
-  { city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2, enable_delete: true, href: Routes.AIRPORT.ZI_SCL },
-  { city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3, enable_delete: false, href: Routes.AIRPORT.ZI_ANF },
-  { city_name: 'Calama', airport_code: 'CJC', branch_id: 179, zone_id: 5, enable_delete: false, href: Routes.AIRPORT.ZI_CJC },
-  { city_name: 'Calama (Los Olivos)', airport_code: 'CJC2', branch_id: 179, zone_id: 13, enable_delete: false, href: Routes.AIRPORT.ZI_CJC_LOS_OLIVOS },
+  { active: true, city_name: 'Santiago', airport_code: 'SCL', branch_id: 1, zone_id: 2, enable_delete: true, href: Routes.AIRPORT.ZI_SCL },
+  { active: true, city_name: 'Antofagasta', airport_code: 'ANF', branch_id: 34, zone_id: 3, enable_delete: false, href: Routes.AIRPORT.ZI_ANF },
+  { active: true, city_name: 'Calama', airport_code: 'CJC', branch_id: 179, zone_id: 5, enable_delete: false, href: Routes.AIRPORT.ZI_CJC },
+  { active: true, city_name: 'Calama (Los Olivos)', airport_code: 'CJC2', branch_id: 179, zone_id: 13, enable_delete: false, href: Routes.AIRPORT.ZI_CJC_LOS_OLIVOS },
 ]
 
 export const airportTools = [
