@@ -23,6 +23,8 @@ export function QRCodeGeneratorDialog({ session } : {
 	const [qrCodeUrl, setQrCodeUrl] = useState<string | null>(null);
 	const [isQrVisible, setIsQrVisible] = useState<boolean>(false);
 	const [passengerName, setPassengerName] = useState<string | null>(null);
+	const [serviceName, setServiceName] = useState<string | null>(null);
+	const [paxCount, setPaxCount] = useState<number | null>(null);
 	const [destinationAddress, setDestinationAddress] = useState<string | null>(null);
 	const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -32,6 +34,8 @@ export function QRCodeGeneratorDialog({ session } : {
 
 		// Reset passenger name and destination address
 		setPassengerName(null);
+		setServiceName(null);
+		setPaxCount(null);
 		setDestinationAddress(null);
 
 		if (!bookingNumber) {
@@ -61,6 +65,8 @@ export function QRCodeGeneratorDialog({ session } : {
 
 			if (bookingInfo[0].booking.type_of_trip !== 'A') {
 				setPassengerName(bookingInfo[0].customer.full_name)
+				setServiceName(bookingInfo[0].booking.service_name)
+				setPaxCount(bookingInfo[0].booking.pax_count)
 				setDestinationAddress(bookingInfo[0].directions.destination.address);
 
 				// Generate QR code only if booking is found
@@ -124,13 +130,22 @@ export function QRCodeGeneratorDialog({ session } : {
 						</button>
 					</div>
 					{errorMessage && <div className='text-center bg-red-400 text-white w-full p-2 rounded-md'>{errorMessage}</div>}
-					{isLoading && <div className='text-center bg-yellow-500 text-black w-full p-2 rounded-md'>Cargando...</div>}
+					{isLoading && <div className='text-center bg-yellow-300 text-black w-full p-2 rounded-md'>Cargando...</div>}
 					{isQrVisible && qrCodeUrl && (
-						<div className="mx-auto flex flex-col gap-2 items-start justify-center">
+						<div className="mx-auto flex flex-col gap-2 items-start justify-center p-2">
 							{passengerName && (
 								<div className='flex flex-row gap-1 items-center'>
 									<span className="block text-center font-semibold">Pasajero:</span>
 									<span className="block text-center truncate max-w-[370px]">{passengerName}</span>
+								</div>
+							)}
+							{serviceName && paxCount && (
+								<div className='flex flex-row gap-1 items-center'>
+									<span className="block text-center font-semibold">Servicio:</span>
+									<span className="block text-center truncate max-w-[370px]">{serviceName}</span>
+									<span>·</span>
+									<span className="block text-center font-semibold">Pasajeros:</span>
+									<span className="block text-center truncate max-w-[370px]">{paxCount}</span>
 								</div>
 							)}
 							{destinationAddress && (
