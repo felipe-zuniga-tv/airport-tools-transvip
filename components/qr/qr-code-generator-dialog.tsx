@@ -13,7 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import { IBookingInfoOutput } from '@/lib/chat/types';
+import TextValue from '@/components/ui/common/text-value';
 
 export function QRCodeGeneratorDialog({ session } : {
 	session: any 
@@ -124,7 +124,7 @@ export function QRCodeGeneratorDialog({ session } : {
 							className="w-full p-2 text-lg border border-gray-300 rounded-md focus:outline-none focus:ring focus:border-blue-300"
 						/>
 						<button onClick={generateQRCode}
-							className="mx-auto min-w-fit px-4 py-2 text-lg bg-transvip text-white rounded-md hover:bg-transvip-dark"
+							className="mx-auto min-w-fit px-4 py-2 text-lg bg-transvip hover:bg-transvip-dark text-white rounded-md"
 						>
 							Generar QR
 						</button>
@@ -133,12 +133,7 @@ export function QRCodeGeneratorDialog({ session } : {
 					{isLoading && <div className='text-center bg-yellow-300 text-black w-full p-2 rounded-md'>Cargando...</div>}
 					{isQrVisible && qrCodeUrl && (
 						<div className="mx-auto flex flex-col gap-2 items-start justify-center p-2">
-							{passengerName && (
-								<div className='flex flex-row gap-1 items-center'>
-									<span className="block text-center font-semibold">Pasajero:</span>
-									<span className="block text-center truncate max-w-[370px]">{passengerName}</span>
-								</div>
-							)}
+							{passengerName && (<TextValue text="Pasajero:" value={passengerName} />)}
 							{serviceName && paxCount && (
 								<div className='flex flex-row gap-1 items-center'>
 									<span className="block text-center font-semibold">Servicio:</span>
@@ -148,12 +143,7 @@ export function QRCodeGeneratorDialog({ session } : {
 									<span className="block text-center truncate max-w-[370px]">{paxCount}</span>
 								</div>
 							)}
-							{destinationAddress && (
-								<div className='flex flex-row gap-1 items-center'>
-									<span className="block text-center font-semibold">Destino:</span>
-									<span className="block text-center truncate max-w-[370px]">{destinationAddress}</span>
-								</div>
-							)}
+							{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
 							<Image height={450} width={450} src={qrCodeUrl} alt='Código QR Generado' className="mx-auto" />
 						</div>
 					)}
