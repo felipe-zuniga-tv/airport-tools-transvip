@@ -15,6 +15,6 @@ export async function GET(request: NextRequest) {
         return NextResponse.json(data)
     } catch (error) {
         console.error('Error fetching zona iluminada vehicles info:', error)
-        return NextResponse.json({ status: 500, error: 'Failed to fetch services data' })
+        return NextResponse.json({ status: 500, error: 'Failed to fetch services data', data: null })
     }
 }

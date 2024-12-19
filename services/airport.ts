@@ -12,8 +12,12 @@ export const airportService = {
     },
 
     async deleteVehicle(zoneId: number, fleetId: number) {
-        const response = await fetch(`/api/airport/delete-vehicles-airport?zoneId=${zoneId}&fleetId=${fleetId}`, {
-            method: 'GET',
+        const response = await fetch(`/api/airport/delete-vehicles-airport`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ zoneId, fleetId }),
         });
         if (!response.ok) throw new Error('Failed to delete vehicle');
         return response.json();
