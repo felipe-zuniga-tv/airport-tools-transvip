@@ -63,7 +63,9 @@ export function QRCodeGeneratorDialog({ session } : {
 				return
 			}
 
-			if (bookingInfo[0].booking.type_of_trip !== 'A') {
+			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z'
+
+			if (bookingZarpe) {
 				setPassengerName(bookingInfo[0].customer.full_name)
 				setServiceName(bookingInfo[0].booking.service_name)
 				setPaxCount(bookingInfo[0].booking.pax_count)
@@ -87,7 +89,7 @@ export function QRCodeGeneratorDialog({ session } : {
 						timestamp: new Date().toISOString(),
 					}),
 				});
-			} else if (bookingInfo[0].booking.type_of_trip !== 'Z') {
+			} else if (!bookingZarpe) {
 				setErrorMessage('Reserva no es de tipo Zarpe');
 			} else {
 				setErrorMessage('Reserva no encontrada');
