@@ -15,8 +15,8 @@ import {
 } from "@/components/ui/dialog";
 import TextValue from '@/components/ui/common/text-value';
 
-export function QRCodeGeneratorDialog({ session } : {
-	session: any 
+export function QRCodeGeneratorDialog({ session }: {
+	session: any
 }) {
 	const [bookingNumber, setBookingNumber] = useState<string>('');
 	const [errorMessage, setErrorMessage] = useState<string>('');
@@ -57,7 +57,7 @@ export function QRCodeGeneratorDialog({ session } : {
 
 		if (bookingInfoResponse.ok) {
 			const bookingInfo = await bookingInfoResponse.json();
-				
+
 			if (bookingInfo.status === 404 || bookingInfo.length === 0) {
 				setErrorMessage('Reserva no fue encontrada');
 				return
@@ -116,7 +116,7 @@ export function QRCodeGeneratorDialog({ session } : {
 					<DialogTitle>Generar Código QR</DialogTitle>
 					<DialogDescription>Ingresa el número de reserva.</DialogDescription>
 				</DialogHeader>
-				<div className='flex flex-col gap-4'>
+				<div className='flex flex-col gap-3'>
 					<div className='flex flex-row gap-2 items-center'>
 						<input
 							type="number"
@@ -134,19 +134,21 @@ export function QRCodeGeneratorDialog({ session } : {
 					{errorMessage && <div className='text-center bg-red-400 text-white w-full p-2 rounded-md'>{errorMessage}</div>}
 					{isLoading && <div className='text-center bg-yellow-300 text-black w-full p-2 rounded-md'>Cargando...</div>}
 					{isQrVisible && qrCodeUrl && (
-						<div className="mx-auto flex flex-col gap-2 items-start justify-center p-2">
-							{passengerName && (<TextValue text="Pasajero:" value={passengerName} />)}
-							{serviceName && paxCount && (
-								<div className='flex flex-row gap-1 items-center'>
-									<span className="block text-center font-semibold">Servicio:</span>
-									<span className="block text-center truncate max-w-[370px]">{serviceName}</span>
-									<span>·</span>
-									<span className="block text-center font-semibold">Pasajeros:</span>
-									<span className="block text-center truncate max-w-[370px]">{paxCount}</span>
-								</div>
-							)}
-							{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
-							<Image height={450} width={450} src={qrCodeUrl} alt='Código QR Generado' className="mx-auto" />
+						<div className="flex flex-col gap-3 items-center justify-center">
+							<div className='passenger-info w-full flex flex-col gap-1 items-start justify-center p-3 bg-green-100 rounded-md shadow-md'>
+								{passengerName && (<TextValue text="Pasajero:" value={passengerName} />)}
+								{serviceName && paxCount && (
+									<div className='flex flex-row gap-1 items-center'>
+										<span className="block text-center font-semibold">Servicio:</span>
+										<span className="block text-center truncate max-w-[370px]">{serviceName}</span>
+										<span>·</span>
+										<span className="block text-center font-semibold">Pasajeros:</span>
+										<span className="block text-center truncate max-w-[370px]">{paxCount}</span>
+									</div>
+								)}
+								{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
+							</div>
+							<Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mt-3" />
 						</div>
 					)}
 				</div>
