@@ -102,7 +102,7 @@ function AirportHeader({ selectedZone, session }: {
                     </span>
                 </div>
             </div>
-            <BookingSearchDialog />
+            {/* <BookingSearchDialog /> */}
             <QRCodeGeneratorDialog session={session} />
             <LiveClock className='mx-auto md:ml-auto' />
         </header>
