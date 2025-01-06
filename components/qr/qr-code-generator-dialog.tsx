@@ -148,7 +148,8 @@ export function QRCodeGeneratorDialog({ session }: {
 								)}
 								{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
 							</div>
-							<Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mt-3" />
+							{ /* <Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mt-3" /> */}
+							<img src={qrCodeUrl} alt='Código QR Generado' className="mt-3 h-[400px] w-[400px]" />
 						</div>
 					)}
 				</div>
