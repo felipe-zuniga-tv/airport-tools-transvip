@@ -9,8 +9,8 @@ export default function DriverAvatar({ url, alt } : {
     return (
         url !== '' && url ? 
             <Zoom>
-                <Image src={url}
-                    width={400} height={400}
+                <img src={url}
+                    // width={400} height={400}
                     className='h-12 w-12 md:h-16 md:w-16 shadow-md object-cover rounded-full' 
                     alt={alt}
                     /> 

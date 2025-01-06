@@ -406,17 +406,19 @@ function BookingCustomer({ result }: {
                         <CustomerVipBadge result={result} />
                     </div>
                 </div>
-                {result.booking.qr_link && false &&
-                    <div className='qr-link hidden ml-auto min-w-fit lg:flex flex-col items-center justify-center'>
-                        <span className='font-bold text-sm'>Código QR</span>
-                        <Zoom>
-                            <Image src={result.booking.qr_link}
-                                width={70} height={70}
-                                alt={result.booking.id.toString()}
-                            />
-                        </Zoom>
-                    </div>
-                }
+                { /*
+                // {result.booking.qr_link && false &&
+                //     <div className='qr-link hidden ml-auto min-w-fit lg:flex flex-col items-center justify-center'>
+                //         <span className='font-bold text-sm'>Código QR</span>
+                //         <Zoom>
+                //             <Image src={result.booking.qr_link}
+                //                 width={70} height={70}
+                //                 alt={result.booking.id.toString()}
+                //             />
+                //         </Zoom>
+                //     </div>
+                // }
+                */}
             </div>
         </div>
     )
