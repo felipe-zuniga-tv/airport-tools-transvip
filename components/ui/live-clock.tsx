@@ -18,8 +18,8 @@ export function LiveClock({ className }: { className?: string }) {
     }, []);
 
     return (
-        <div className={cn("text-slate-900 w-[150px] text-lg p-2 px-6 bg-white rounded-lg flex flex-row items-center gap-2 font-sans", className || '')}>
-            <Clock className='h-4 w-4' /> {time}
+        <div className={cn("text-slate-900 h-full w-[150px] text-xl p-2 px-6 bg-white rounded-lg flex flex-row items-center gap-2 font-sans", className || '')}>
+            <Clock className='hidden h-4 w-4' /> {time}
         </div>
     );
 }

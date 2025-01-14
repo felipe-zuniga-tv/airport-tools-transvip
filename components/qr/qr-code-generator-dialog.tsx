@@ -109,14 +109,16 @@ export function QRCodeGeneratorDialog({ session }: {
 	return (
 		<Dialog onOpenChange={(open) => { if (!open) handleStartOver(); }}>
 			<DialogTrigger asChild>
-				<Button variant="default"><QrCode /> Generar QR</Button>
+				<Button variant="default" className="text-lg h-full px-6">
+					<QrCode className='w-6 h-6' /> Generar QR
+				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">
 				<DialogHeader>
 					<DialogTitle>Generar Código QR</DialogTitle>
 					<DialogDescription>Ingresa el número de reserva.</DialogDescription>
 				</DialogHeader>
-				<div className='flex flex-col gap-3'>
+				<div className='flex flex-col gap-3 py-2'>
 					<div className='flex flex-row gap-2 items-center'>
 						<input
 							type="number"
@@ -134,7 +136,7 @@ export function QRCodeGeneratorDialog({ session }: {
 					{errorMessage && <div className='text-center bg-red-400 text-white w-full p-2 rounded-md'>{errorMessage}</div>}
 					{isLoading && <div className='text-center bg-yellow-300 text-black w-full p-2 rounded-md'>Cargando...</div>}
 					{isQrVisible && qrCodeUrl && (
-						<div className="flex flex-col gap-3 items-center justify-center">
+						<div className="flex flex-col gap-4 items-center justify-center">
 							<div className='passenger-info w-full flex flex-col gap-1 items-start justify-center p-3 bg-green-100 rounded-md shadow-md'>
 								{passengerName && (<TextValue text="Pasajero:" value={passengerName} />)}
 								{serviceName && paxCount && (
@@ -149,11 +151,11 @@ export function QRCodeGeneratorDialog({ session }: {
 								{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
 							</div>
 							{ /* <Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mt-3" /> */}
-							<img src={qrCodeUrl} alt='Código QR Generado' className="mt-3 h-[400px] w-[400px]" />
+							<img src={qrCodeUrl} alt='Código QR Generado' className="h-[420px] w-[420px]" />
 						</div>
 					)}
 				</div>
-				<DialogFooter className='mt-2'>
+				<DialogFooter className='mt-4'>
 					<Button type="button" onClick={handleStartOver} className="px-4 py-2 bg-gray-500 text-white text-xs rounded-md hover:bg-gray-600 transition duration-300 min-w-fit">
 						Empezar de nuevo
 						<RotateCw className='ml-2 h-4 w-4' />

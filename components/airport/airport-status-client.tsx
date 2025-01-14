@@ -10,7 +10,7 @@ import { LiveClock } from '../ui/live-clock'
 import { AirportZone, airportZones } from '@/lib/config/airport'
 import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
-import { BookingSearchDialog } from '../booking/booking-search-dialog'
+// import { BookingSearchDialog } from '../booking/booking-search-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { airportService } from '@/services/airport'
@@ -86,7 +86,7 @@ function AirportHeader({ selectedZone, session }: {
     session: any
 }) {
     return (
-        <header className="bg-transvip/90 shadow-md p-3 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
+        <header className="bg-transvip/90 shadow-md p-4 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
             <div className='w-full flex flex-row items-center justify-center sm:justify-start gap-4'>
                 <TransvipLogo size={36} colored={false} logoOnly={true} className='' />
                 <div className='flex flex-col gap-1 justify-start'>
@@ -117,15 +117,15 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
     if (!vehicleTypes || vehicleTypes.length === 0) return
 
     return (
-        <div className={`bg-white p-4 h-[160px] text-base md:text-2xl lg:text-xl flex flex-row justify-center items-center gap-4 overflow-x-scroll_ snap-start`}>
+        <div className={`bg-white p-4 text-2xl flex flex-row justify-center items-center gap-4`}>
             {vehicleTypes.map((vType: AirportVehicleType) => (
                 <div key={vType.name}
                     onClick={() => handleSelectedType(vType.name)}
-                    className={cn('w-[212px] h-[128px] shadow-xl flex flex-col items-center justify-center p-4 rounded-lg transition-colors',
+                    className={cn('w-[212px] h-[140px] shadow-xl flex flex-col items-center justify-center p-4 rounded-lg transition-colors',
                         selectedType === vType.name ? 'bg-slate-700 hover:bg-slate-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     )}>
                     <div className='flex flex-col items-center gap-2 justify-center'>
-                        <span className="text-center text-2xl font-semibold">{vType.name}</span>
+                        <span className="text-center text-3xl font-semibold">{vType.name}</span>
                         <span className="text-4xl font-semibold">{vType.count}</span>
                     </div>
                 </div>
