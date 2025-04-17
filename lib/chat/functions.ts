@@ -361,7 +361,8 @@ async function processBookingInfo(results: IBookingInfo[], accessToken: string):
             is_round_trip, 
             estimated_payment_cost, payment_amount,
             branch,
-            customer_category_name,
+            // customer_category_name,
+            category_name,
             payment_status, 
             fleet_first_name, fleet_last_name, 
             fleet_country_code, fleet_phone_number,
@@ -481,8 +482,10 @@ async function processBookingInfo(results: IBookingInfo[], accessToken: string):
                 type: vehicleDetail?.type.name
             },
             customer: {
-                vip_flag: customer_category_name.toUpperCase() === 'VIP' || customer_category_name.toUpperCase() === 'SUPERVIP',
-                vip_label: customer_category_name === '' ? 'NO VIP' : customer_category_name.toUpperCase(),
+                // vip_flag: customer_category_name.toUpperCase() === 'VIP' || customer_category_name.toUpperCase() === 'SUPERVIP',
+                // vip_label: customer_category_name === '' ? 'NO VIP' : customer_category_name.toUpperCase(),
+                vip_flag: category_name ? (category_name.toUpperCase() === 'VIP' || category_name.toUpperCase() === 'SUPERVIP') : false,
+                vip_label: category_name ? (category_name === '' ? 'NO VIP' : category_name.toUpperCase()) : 'NO VIP',
                 full_name: pax_full_name,
                 phone_number: pax_phone_number,
                 email: job_pickup_email,

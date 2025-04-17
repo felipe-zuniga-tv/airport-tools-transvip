@@ -63,6 +63,8 @@ export function QRCodeGeneratorDialog({ session }: {
 				return
 			}
 
+			console.log(bookingInfo);
+
 			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z'
 
 			if (bookingZarpe) {
