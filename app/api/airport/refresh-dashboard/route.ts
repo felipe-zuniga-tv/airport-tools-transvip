@@ -10,7 +10,6 @@ export async function GET(request: NextRequest) {
 
   try {
     const data = await getZonaIluminadaServices(parseInt(zoneId))
-    console.log(data)
 
     if (data)
       return NextResponse.json(data)

@@ -2,10 +2,11 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { SubmitButton } from '../ui/form-submit'
-import { KeySquare, Mail } from 'lucide-react'
 import { Routes } from '@/utils/routes'
 import { login } from '@/lib/auth/functions'
+import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
 
 export function LoginFormClient() {
     const [error, setError] = useState<string | null>(null)
@@ -14,7 +15,7 @@ export function LoginFormClient() {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault()
-        
+
         try {
             setIsLoading(true)
             setError(null)
@@ -22,12 +23,12 @@ export function LoginFormClient() {
             const formData = new FormData(event.currentTarget)
             const email = formData.get("email")?.toString()
             const password = formData.get("password")?.toString()
-    
+
             if (!email || !password) {
                 setError('Ingresa tus credenciales')
                 return null
             }
-            
+
             const loginResponse = await login(email, password)
 
             if (loginResponse && loginResponse.status === 200) {
@@ -46,36 +47,39 @@ export function LoginFormClient() {
 
     return (
         <div className="flex flex-col w-full sm:max-w-md justify-center gap-4">
-            <span className='mx-auto text-xl text-white'>Ingresa aquí</span>
-            <form onSubmit={handleSubmit} method='POST' className="auth-form auth-widths">
-                <div className="relative">
-                    <input
-                        type="email"
+            <form onSubmit={handleSubmit} method='POST' className="flex flex-col gap-4">
+                <div className="space-y-2">
+                    <Label htmlFor="email">Email</Label>
+                    <Input
+                        id="email"
                         name="email"
-                        className="auth-input-field"
-                        placeholder="Email"
+                        type="email"
+                        placeholder="usuario@email.com"
+                        autoComplete="email"
                         required
+                        disabled={isLoading}
                     />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center justify-center pr-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                        <Mail size={20} strokeWidth={2} aria-hidden="true" role="presentation" />
-                    </div>
                 </div>
-                <div className="relative">
-                    <input
-                        type="password"
+                <div className="space-y-2">
+                    <Label htmlFor="password">Contraseña</Label>
+                    <Input
+                        id="password"
                         name="password"
-                        className="auth-input-field"
-                        placeholder="Password"
+                        type="password"
+                        placeholder="••••••••"
+                        autoComplete="current-password"
                         required
+                        disabled={isLoading}
                     />
-                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center justify-center pr-3 text-muted-foreground/80 peer-disabled:opacity-50">
-                        <KeySquare size={20} strokeWidth={2} aria-hidden="true" role="presentation" />
-                    </div>
                 </div>
 
-                <SubmitButton pendingState={'Ingresando...'} className='auth-btn' isLoading={isLoading}>
-                    Ingresar
-                </SubmitButton>
+                <Button
+                    type="submit"
+                    className="w-full"
+                    disabled={isLoading}
+                >
+                    {isLoading ? "Verificando..." : "Continuar"}
+                </Button>
 
                 {error && <div className="text-red-500 text-sm mt-2 p-2 text-center bg-white rounded-md">{error}</div>}
             </form>
