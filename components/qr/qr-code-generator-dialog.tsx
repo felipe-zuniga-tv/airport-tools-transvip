@@ -13,7 +13,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
-import TextValue from '@/components/ui/common/text-value';
+import TextValue from '@/components/common/text-value';
 
 export function QRCodeGeneratorDialog({ session }: {
 	session: any
@@ -112,7 +112,8 @@ export function QRCodeGeneratorDialog({ session }: {
 		<Dialog onOpenChange={(open) => { if (!open) handleStartOver(); }}>
 			<DialogTrigger asChild>
 				<Button variant="default" className="text-lg h-full px-6">
-					<QrCode className='w-6 h-6' /> Generar QR
+					<QrCode className='w-6 h-6 shrink-0' />
+					<span className='font-normal'>Generar QR</span>
 				</Button>
 			</DialogTrigger>
 			<DialogContent className="sm:max-w-[500px]">

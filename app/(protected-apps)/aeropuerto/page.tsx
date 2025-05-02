@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { airportZones } from '@/lib/config/airport'
-import Header from '@/components/ui/navigation/header';
+import Header from '@/components/navigation/header';
 import { TransvipLogo } from '@/components/transvip/transvip-logo';
 
 export default function AirportStartPage() {

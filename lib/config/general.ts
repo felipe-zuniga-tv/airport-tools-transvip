@@ -1,3 +1,5 @@
+export const revalidate = false
+
 export const config = {
     COOKIES: {
         TOKEN_JWT_SECRET: "secret_key_transvip",
