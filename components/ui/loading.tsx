@@ -1,3 +1,5 @@
+import { Loader2 } from "lucide-react"
+
 const spinnerSizes = Object.freeze({
     SMALL: 'h-4 w-4',
     MEDIUM: 'h-6 w-6',
@@ -15,7 +17,8 @@ export const Spinner = ({ size }: { size? : keyof typeof spinnerSizes }) => {
 
 export const LoadingMessage = ({ message }: { message : string }) => {
     return (
-        <div className="flex justify-center items-center h-full">
+        <div className="flex gap-2 justify-center items-center h-full">
+            <Loader2 className="size-6 animate-spin" />
             <span className="text-xl font-bold">{ message }</span>
         </div>
     )

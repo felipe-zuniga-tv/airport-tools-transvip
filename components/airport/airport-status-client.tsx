@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
@@ -10,7 +10,6 @@ import { LiveClock } from '../ui/live-clock'
 import { AirportZone, airportZones } from '@/lib/config/airport'
 import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
-// import { BookingSearchDialog } from '../booking/booking-search-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { airportService } from '@/services/airport'
@@ -25,11 +24,15 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     session: any
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
-    const [selectedType, setSelectedType] = useState(vehicleTypesList && vehicleTypesList.length ? vehicleTypesList[0].name : '');
+    const [selectedType, setSelectedType] = useState(vehicleTypesList?.length ? vehicleTypesList[0].name : '');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
     const { vehicleTypes, vehicleList, isLoading, fetchUpdates } = useAirportStatus(selectedZone, AIRPORT_CONSTANTS.SECONDS_TO_UPDATE);
+
+    useEffect(() => {
+        fetchUpdates();
+    }, []);
 
     const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);
@@ -122,7 +125,7 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
                 <div key={vType.name}
                     onClick={() => handleSelectedType(vType.name)}
                     className={cn('w-[212px] h-[140px] shadow-xl flex flex-col items-center justify-center p-4 rounded-lg transition-colors',
-                        selectedType === vType.name ? 'bg-slate-700 hover:bg-slate-500 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
+                        selectedType === vType.name ? 'bg-orange-500 hover:bg-orange-600 text-white' : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                     )}>
                     <div className='flex flex-col items-center gap-2 justify-center'>
                         <span className="text-center text-3xl font-semibold">{vType.name}</span>
