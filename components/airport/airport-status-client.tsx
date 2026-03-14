@@ -10,6 +10,7 @@ import { LiveClock } from '../ui/live-clock'
 import { AirportZone, airportZones } from '@/lib/config/airport'
 import { Routes } from '@/utils/routes'
 import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
+import { QRCodeScannerDialog } from '../qr/qr-code-scanner-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { airportService } from '@/services/airport'
@@ -106,6 +107,7 @@ function AirportHeader({ selectedZone, session }: {
                 </div>
             </div>
             {/* <BookingSearchDialog /> */}
+            <QRCodeScannerDialog session={session} />
             <QRCodeGeneratorDialog session={session} />
             <LiveClock className='mx-auto md:ml-auto' />
         </header>
