@@ -70,7 +70,7 @@ export function QRCodeGeneratorDialog({ session }: {
 				return
 			}
 
-			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z' || bookingInfo[0].booking.type_of_trip === 'P'
+			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z'
 
 			if (bookingZarpe) {
 				setPassengerName(bookingInfo[0].customer.full_name)
