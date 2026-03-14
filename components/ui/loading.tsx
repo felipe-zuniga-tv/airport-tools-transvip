@@ -1,9 +1,9 @@
 import { Loader2 } from "lucide-react"
 
 const spinnerSizes = Object.freeze({
-    SMALL: 'h-4 w-4',
-    MEDIUM: 'h-6 w-6',
-    LARGE: 'h-12 w-12'
+    SMALL: 'size-4',
+    MEDIUM: 'size-6',
+    LARGE: 'size-12'
 })
 
 export const Spinner = ({ size }: { size? : keyof typeof spinnerSizes }) => {

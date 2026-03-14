@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Slot } from "@radix-ui/react-slot"
+import { Slot as SlotPrimitive } from "radix-ui"
 import { VariantProps, cva } from "class-variance-authority"
 import { PanelLeft } from "lucide-react"
 
@@ -272,7 +272,7 @@ const SidebarTrigger = React.forwardRef<
       data-sidebar="trigger"
       variant="ghost"
       size="icon"
-      className={cn("h-7 w-7 z-30", className)}
+      className={cn("size-7 z-30", className)}
       onClick={(event) => {
         onClick?.(event)
         toggleSidebar()
@@ -433,7 +433,7 @@ const SidebarGroupLabel = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & { asChild?: boolean }
 >(({ className = "", asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "div"
+  const Comp = asChild ? SlotPrimitive.Slot : "div"
 
   return (
     <Comp
@@ -454,7 +454,7 @@ const SidebarGroupAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & { asChild?: boolean }
 >(({ className = "", asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? SlotPrimitive.Slot : "button"
 
   return (
     <Comp
@@ -554,7 +554,7 @@ const SidebarMenuButton = React.forwardRef<
     },
     ref
   ) => {
-    const Comp = asChild ? Slot : "button"
+    const Comp = asChild ? SlotPrimitive.Slot : "button"
     const { isMobile, state } = useSidebar()
 
     const button = (
@@ -600,7 +600,7 @@ const SidebarMenuAction = React.forwardRef<
     showOnHover?: boolean
   }
 >(({ className = "", asChild = false, showOnHover = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button"
+  const Comp = asChild ? SlotPrimitive.Slot : "button"
 
   return (
     <Comp
@@ -651,9 +651,10 @@ const SidebarMenuSkeleton = React.forwardRef<
     showIcon?: boolean
   }
 >(({ className = "", showIcon = false, ...props }, ref) => {
-  // Random width between 50 to 90%.
-  const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
+  const [width, setWidth] = React.useState("50%")
+
+  React.useEffect(() => {
+    setWidth(`${Math.floor(Math.random() * 40) + 50}%`)
   }, [])
 
   return (
@@ -714,7 +715,7 @@ const SidebarMenuSubButton = React.forwardRef<
     isActive?: boolean
   }
 >(({ asChild = false, size = "md", isActive, className = "", ...props }, ref) => {
-  const Comp = asChild ? Slot : "a"
+  const Comp = asChild ? SlotPrimitive.Slot : "a"
 
   return (
     <Comp

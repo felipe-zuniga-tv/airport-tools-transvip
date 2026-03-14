@@ -32,7 +32,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
 
     useEffect(() => {
         fetchUpdates();
-    }, []);
+    }, [fetchUpdates]);
 
     const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);

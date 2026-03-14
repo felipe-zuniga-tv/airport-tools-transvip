@@ -1,5 +1,6 @@
 'use client'
 
+import Image from "next/image";
 import { QrCode, RotateCw } from 'lucide-react';
 import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
@@ -181,7 +182,7 @@ export function QRCodeGeneratorDialog({ session }: {
 								{destinationAddress && (<TextValue text="Destino:" value={destinationAddress} />)}
 							</div>
 							{ /* <Image height={400} width={400} src={qrCodeUrl} alt='Código QR Generado' className="mt-3" /> */}
-							<img src={qrCodeUrl} alt='Código QR Generado' className="h-[400px] w-[400px]" />
+							<Image src={qrCodeUrl} alt='Código QR Generado' width={400} height={400} className="h-[400px] w-[400px]" />
 						</div>
 					)}
 				</div>
