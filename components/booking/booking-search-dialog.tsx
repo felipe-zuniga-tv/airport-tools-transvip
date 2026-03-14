@@ -9,11 +9,13 @@ import {
 } from "@/components/ui/dialog";
 import { BookingIdSearch } from './booking-search';
 import { MagnifyingGlassIcon } from '@radix-ui/react-icons';
+import { readApiEnvelope } from '@/lib/api/client';
+import { IBookingInfoOutput } from '@/lib/main/types';
 
 export function BookingSearchDialog() {
     const [bookingId, setBookingId] = useState<string>('');
     const [errorMessage, setErrorMessage] = useState<string>('');
-    const [bookingInfo, setBookingInfo] = useState<any>(null); // Adjust type as needed
+    const [bookingInfo, setBookingInfo] = useState<IBookingInfoOutput[] | null>(null);
     const [loading, setLoading] = useState<boolean>(false); // New loading state
 
     const handleDialogClose = () => {
@@ -43,13 +45,13 @@ export function BookingSearchDialog() {
             });
 
             if (!response.ok) {
-                const errorData = await response.json();
-                setErrorMessage(errorData.message || 'Reserva no encontrada');
+                const errorData = await readApiEnvelope<IBookingInfoOutput[]>(response);
+                setErrorMessage(errorData.error || 'Reserva no encontrada');
                 setLoading(false); // Reset loading state
                 return;
             }
 
-            const info = await response.json();
+            const { data: info } = await readApiEnvelope<IBookingInfoOutput[]>(response);
             setBookingInfo(info);
         } catch (error) {
             console.error(error);

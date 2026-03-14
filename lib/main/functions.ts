@@ -1,4 +1,4 @@
-import { format, formatISO, addHours } from "date-fns";
+import { format } from "date-fns";
 import { getSession } from "../auth";
 import { branches } from "../config/transvip-general";
 import { VEHICLE_STATUS } from "../utils";
@@ -11,7 +11,7 @@ const VEHICLE_DETAIL_API_URL                = buildAPIUrl(process.env.GET_VEHICL
 const DRIVER_SEARCH_API_URL                 = buildAPIUrl(process.env.SEARCH_DRIVER);
 const DRIVER_PROFILE_API_URL                = buildAPIUrl(process.env.GET_DRIVER_PROFILE);
 const DRIVER_RATINGS_API_URL                = buildAPIUrl(process.env.GET_DRIVER_RATINGS);
-const BOOKING_DETAIL_URL                    = buildAPIUrl(process.env.GET_BOOKING_DETAIL);
+// const BOOKING_DETAIL_URL                    = buildAPIUrl(process.env.GET_BOOKING_DETAIL);
 const BOOKING_INFO_FULL_URL                 = buildAPIUrl(process.env.GET_BOOKING_INFO_FULL);
 const BOOKING_ID_API_URL                    = buildAPIUrl(process.env.GET_BOOKING_BY_ID);
 const ZONA_ILUMINADA_CITY                   = buildAPIUrl(process.env.GET_ZONA_ILUMINADA_CITY);
@@ -23,6 +23,7 @@ const DELETE_VEHICLE_AIRPORT_ZONE_API_URL   = buildAPIUrl(process.env.DELETE_VEH
 function buildAPIUrl(endpoint: string | undefined) {
     return `${process.env.NEXT_PUBLIC_API_BASE_URL}/${endpoint}`
 }
+
 async function getResponseFromURL(URL: string) {
     try {
         const options = {
@@ -40,7 +41,6 @@ async function getResponseFromURL(URL: string) {
         return null
     }
 }
-
 async function postResponseToURL(URL: string, body: any) {
     try {
         const options = {

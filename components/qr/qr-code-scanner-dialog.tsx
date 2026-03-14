@@ -14,6 +14,8 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import TextValue from '@/components/common/text-value';
+import { readApiEnvelope } from '@/lib/api/client';
+import { IBookingInfoOutput } from '@/lib/main/types';
 
 export function QRCodeScannerDialog({ session }: {
 	session: any
@@ -79,9 +81,9 @@ export function QRCodeScannerDialog({ session }: {
 			});
 
 			if (bookingInfoResponse.ok) {
-				const bookingInfo = await bookingInfoResponse.json();
+				const { data: bookingInfo } = await readApiEnvelope<IBookingInfoOutput[]>(bookingInfoResponse);
 
-				if (bookingInfo.status === 404 || bookingInfo.length === 0) {
+				if (!bookingInfo?.length) {
 					setErrorMessage('Reserva no encontrada');
 					return;
 				}
@@ -91,10 +93,10 @@ export function QRCodeScannerDialog({ session }: {
 				if (bookingZarpe) {
 					setPassengerName(bookingInfo[0].customer.full_name);
 					setServiceName(bookingInfo[0].booking.service_name);
-					setPaxCount(bookingInfo[0].booking.pax_count);
+					setPaxCount(Number(bookingInfo[0].booking.pax_count));
 					setDestinationAddress(bookingInfo[0].directions.destination.address);
 					setVipLabel(bookingInfo[0].customer.vip_label);
-					setSharedServiceId(bookingInfo[0].booking.shared_service_id);
+					setSharedServiceId(bookingInfo[0].booking.shared_service_id ?? null);
 				} else {
 					setErrorMessage('Reserva no es de tipo Zarpe');
 				}

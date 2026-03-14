@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { addMinutes, differenceInDays, differenceInMinutes } from 'date-fns';
-import { IBookingInfoOutput } from '@/lib/chat/types';
+import { IBookingInfoOutput } from '@/lib/main/types';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { CheckIcon, Clock, GoalIcon, MailIcon, MapIcon, MapPin, Pencil, PhoneIcon, SearchIcon, UserCircleIcon, X } from 'lucide-react';
 // import { WhatsappIcon } from '@/components/ui/icons';
-import { buildWhatsappLink } from '@/lib/chat/functions';
+import { buildWhatsappLink } from '@/lib/main/functions';
 import { BookingStatusBadge, CityBadge, CustomerVipBadge, PaymentRouteType, PaymentStatusBadge, ServiceNameBadge } from '@/components/badges/chat-badges'
 import { BookingIdBadge } from '../badges/booking-badge';
 import DriverAvatar from '../driver/driver-avatar';

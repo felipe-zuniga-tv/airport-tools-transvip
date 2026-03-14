@@ -1,22 +1,24 @@
-import { getZonaIluminadaServices } from '@/lib/chat/functions'
-import { NextRequest, NextResponse } from 'next/server'
+import { getZonaIluminadaServices } from '@/lib/main/functions'
+import { apiError, apiSuccess } from '@/lib/api/response'
+import { NextRequest } from 'next/server'
 
 export async function GET(request: NextRequest) {
   const zoneId = request.nextUrl.searchParams.get('zoneId') as string
   
   if (!zoneId) {
-    return NextResponse.json({ status: 400, error: 'Missing zoneId' })
+    return apiError('Missing zoneId', 400)
   }
 
   try {
     const data = await getZonaIluminadaServices(parseInt(zoneId))
 
-    if (data)
-      return NextResponse.json(data)
+    if (!data) {
+      return apiError('No services found', 404)
+    }
     
-    return NextResponse.json({ status: 404, error: 'No services found', data: null })
+    return apiSuccess(data)
   } catch (error) {
     console.error('Error refreshing zona iluminada services:', error)
-    return NextResponse.json({ status: 500, error: 'Failed to fetch services' })
+    return apiError('Failed to fetch services', 500)
   }
 }

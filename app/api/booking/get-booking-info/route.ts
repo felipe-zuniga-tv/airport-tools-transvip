@@ -1,20 +1,23 @@
-import { getBookingInfo } from '@/lib/chat/functions';
+import { getBookingInfo } from '@/lib/main/functions';
+import { apiError, apiSuccess } from '@/lib/api/response';
 
 export async function POST(request: Request) {
   const { bookingId } = await request.json()
 
   if (!bookingId) {
-    return Response.json({ status: 404, message: 'Booking ID is required' });
+    return apiError('Booking ID is required', 400);
   }
 
   try {
     const bookingInfo = await getBookingInfo(Number(bookingId));
-    if (!bookingInfo) {
-      return Response.json({ status: 404, message: 'Booking not found' });
+
+    if (!bookingInfo?.length) {
+      return apiError('Booking not found', 404);
     }
-    return Response.json(bookingInfo)
+
+    return apiSuccess(bookingInfo)
   } catch (error) {
     console.error('Booking Info was not obtained: ', error);
-    return Response.json({ status: 500, message: 'Internal server error', error });
+    return apiError('Internal server error', 500);
   }
 }

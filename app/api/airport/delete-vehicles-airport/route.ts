@@ -1,22 +1,24 @@
-import { deleteVehicleZonaIluminada } from '@/lib/chat/functions';
-import { NextRequest, NextResponse } from 'next/server'
+import { deleteVehicleZonaIluminada } from '@/lib/main/functions';
+import { apiError, apiSuccess } from '@/lib/api/response';
+import { NextRequest } from 'next/server'
 
 export async function POST(request: NextRequest) {
     const { fleetId, zoneId } = await request.json();
 
     if (!zoneId || !fleetId) {
-        return NextResponse.json({ status: 404, message: 'Zone ID and Fleet ID are required' });
+        return apiError('Zone ID and Fleet ID are required', 400);
     }
 
     try {
         const result = await deleteVehicleZonaIluminada(Number(fleetId), Number(zoneId));
-        console.log(result);
+
         if (!result) {
-            return NextResponse.json({ status: 404, message: 'Vehicle not processed' });
+            return apiError('Vehicle not processed', 404);
         }
-        return NextResponse.json(result);
+
+        return apiSuccess(result);
     } catch (error) {
         console.error('Vehicle was not deleted from ZI', error);
-        return NextResponse.json({ status: 500, message: 'Vehicle was not deleted', error: error });
+        return apiError('Vehicle was not deleted', 500);
     }
 }

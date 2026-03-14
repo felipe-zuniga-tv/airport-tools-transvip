@@ -1,5 +1,5 @@
 import { Coins, CreditCard, ReceiptText } from "lucide-react";
-import { IBookingInfoOutput } from "@/lib/chat/types";
+import { IBookingInfoOutput } from "@/lib/main/types";
 import { paymentMethods } from "@/lib/config/transvip-general";
 
 export default function PaymentAvatar({ result } : { result : IBookingInfoOutput }) {

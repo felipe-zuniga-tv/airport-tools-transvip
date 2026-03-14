@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
@@ -29,11 +29,11 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
 
-    const { vehicleTypes, vehicleList, isLoading, fetchUpdates } = useAirportStatus(selectedZone, AIRPORT_CONSTANTS.SECONDS_TO_UPDATE);
-
-    useEffect(() => {
-        fetchUpdates();
-    }, [fetchUpdates]);
+    const { vehicleTypes, vehicleList, isLoading, fetchUpdates } = useAirportStatus(
+        selectedZone,
+        AIRPORT_CONSTANTS.SECONDS_TO_UPDATE,
+        vehicleTypesList,
+    );
 
     const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);
@@ -49,6 +49,21 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
         }
     }, [selectedZone.zone_id, fetchUpdates]);
 
+    const activeSelectedType = useMemo(() => {
+        if (!vehicleTypes.length) {
+            return '';
+        }
+
+        return vehicleTypes.some((vehicleType) => vehicleType.name === selectedType)
+            ? selectedType
+            : vehicleTypes[0].name;
+    }, [selectedType, vehicleTypes]);
+
+    const filteredVehicleList = useMemo(
+        () => vehicleList.filter((vehicle) => vehicle.vehicle_type === activeSelectedType),
+        [activeSelectedType, vehicleList],
+    );
+
     return (
         <div className="flex flex-col h-screen bg-gray-100">
             {/* Header */}
@@ -59,14 +74,14 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
                 <>
                     {/* Vehicle Type Buttons */}
                     <VehicleTypes vehicleTypes={vehicleTypes}
-                        selectedType={selectedType || ''}
+                        selectedType={activeSelectedType}
                         handleSelectedType={(type) => setSelectedType(type)} />
         
                     {/* Vehicle List Summary / With - without pax */}
-                    <VehicleListSummary vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)} />
+                    <VehicleListSummary vehicleList={filteredVehicleList} />
         
                     {/* Vehicle List */}
-                    <VehicleListDetail vehicleList={vehicleList.filter(x => x.vehicle_type === selectedType)}
+                    <VehicleListDetail vehicleList={filteredVehicleList}
                         handleDeleteVehicle={handleDeleteVehicle}
                         enableDeleteButton={selectedZone.enable_delete}
                     />
