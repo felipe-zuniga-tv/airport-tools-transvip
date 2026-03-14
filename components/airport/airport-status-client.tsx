@@ -46,7 +46,7 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
         } catch (error) {
             console.error('Error deleting vehicle:', error);
         }
-    }, [selectedZone.zone_id, fetchUpdates, fetchUpdates]);
+    }, [selectedZone.zone_id, fetchUpdates]);
 
     return (
         <div className="flex flex-col h-screen bg-gray-100">
