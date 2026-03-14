@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import {
 	Dialog,
 	DialogContent,
-	DialogDescription,
+	// DialogDescription,
 	DialogFooter,
 	DialogHeader,
 	DialogTitle,

@@ -1,6 +1,6 @@
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { ChevronRight, MoreHorizontal } from "lucide-react"
-import { Slot as SlotPrimitive } from "radix-ui"
 
 import { cn } from "@/lib/utils"
 
@@ -15,7 +15,7 @@ Breadcrumb.displayName = "Breadcrumb"
 const BreadcrumbList = React.forwardRef<
   HTMLOListElement,
   React.ComponentPropsWithoutRef<"ol">
->(({ className = "", ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <ol
     ref={ref}
     className={cn(
@@ -30,7 +30,7 @@ BreadcrumbList.displayName = "BreadcrumbList"
 const BreadcrumbItem = React.forwardRef<
   HTMLLIElement,
   React.ComponentPropsWithoutRef<"li">
->(({ className = "", ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <li
     ref={ref}
     className={cn("inline-flex items-center gap-1.5", className)}
@@ -44,8 +44,8 @@ const BreadcrumbLink = React.forwardRef<
   React.ComponentPropsWithoutRef<"a"> & {
     asChild?: boolean
   }
->(({ asChild, className = "", ...props }, ref) => {
-  const Comp = asChild ? SlotPrimitive.Slot : "a"
+>(({ asChild, className, ...props }, ref) => {
+  const Comp = asChild ? Slot : "a"
 
   return (
     <Comp
@@ -60,7 +60,7 @@ BreadcrumbLink.displayName = "BreadcrumbLink"
 const BreadcrumbPage = React.forwardRef<
   HTMLSpanElement,
   React.ComponentPropsWithoutRef<"span">
->(({ className = "", ...props }, ref) => (
+>(({ className, ...props }, ref) => (
   <span
     ref={ref}
     role="link"
@@ -74,13 +74,13 @@ BreadcrumbPage.displayName = "BreadcrumbPage"
 
 const BreadcrumbSeparator = ({
   children,
-  className = "",
+  className,
   ...props
 }: React.ComponentProps<"li">) => (
   <li
     role="presentation"
     aria-hidden="true"
-    className={cn("[&>svg]:size-3.5", className)}
+    className={cn("[&>svg]:w-3.5 [&>svg]:h-3.5", className)}
     {...props}
   >
     {children ?? <ChevronRight />}
@@ -89,16 +89,16 @@ const BreadcrumbSeparator = ({
 BreadcrumbSeparator.displayName = "BreadcrumbSeparator"
 
 const BreadcrumbEllipsis = ({
-  className = "",
+  className,
   ...props
 }: React.ComponentProps<"span">) => (
   <span
     role="presentation"
     aria-hidden="true"
-    className={cn("flex size-9 items-center justify-center", className)}
+    className={cn("flex h-9 w-9 items-center justify-center", className)}
     {...props}
   >
-    <MoreHorizontal className="size-4" />
+    <MoreHorizontal className="h-4 w-4" />
     <span className="sr-only">More</span>
   </span>
 )
