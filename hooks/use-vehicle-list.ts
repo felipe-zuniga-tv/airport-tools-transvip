@@ -53,7 +53,7 @@ export function useVehicleList(
 
             latestVehicles = Object.values(latestVehicles)
 
-            setVehicleList(latestVehicles);
+            setVehicleList(latestVehicles as AirportVehicleDetail[]);
             // setVehicleList(data);
         } catch (error) {
             console.error('Error fetching vehicle list:', error);
