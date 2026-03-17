@@ -15,7 +15,7 @@ export default function AirportStartPage() {
                     <div className='p-8 bg-white rounded-md flex flex-col gap-4 items-start justify-start overflow-auto'>
                         {airportZones.map((zone) => (
                             <Link key={zone.airport_code} href={zone.href} className='w-full'>
-                                <div className="p-12 rounded-md bg-slate-700 hover:bg-slate-500 text-white shadow-md text-xl text-center">
+                                <div className="p-12 rounded-md bg-slate-600 hover:bg-slate-500 text-white shadow-md text-3xl text-center">
                                     Zona Iluminada - {zone.city_name}
                                 </div>
                             </Link>

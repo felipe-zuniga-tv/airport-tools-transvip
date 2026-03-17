@@ -19,3 +19,19 @@ export const calculateDuration = (entryTime: String) => {
   const diffInMinutes = Math.floor((now.getTime() - entry.getTime()) / 60000)
   return diffInMinutes
 }
+
+export function fixName(name: string) {
+  if (!name) return null
+
+  const fixedName = name
+      .trim()
+      .replaceAll("  ", " ")
+      .toLowerCase()
+      .split(" ")
+      .filter(p => p !== '')
+      .map(n => n[0].toUpperCase() + n.slice(1))
+      .join(" ")
+      .trim()
+
+  return fixedName
+}

@@ -72,7 +72,7 @@ export function QRCodeGeneratorDialog({ session }: {
 				return
 			}
 
-			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z'
+			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z' || bookingInfo[0].booking.type_of_trip === 'P'
 
 			if (bookingZarpe) {
 				setPassengerName(bookingInfo[0].customer.full_name)
@@ -155,7 +155,7 @@ export function QRCodeGeneratorDialog({ session }: {
 										{(vipLabel === 'VIP' || vipLabel === 'SUPERVIP') && (
 											<Badge
 												variant="default"
-												className={`whitespace-nowrap ${vipLabel === 'SUPERVIP' ? 'bg-yellow-200 text-black' : vipLabel === 'VIP' ? 'bg-teal-500 text-white' : 'bg-gray-100 text-gray-800'}`}
+												className={`whitespace-nowrap ${vipLabel === 'SUPERVIP' ? 'bg-yellow-200 hover:bg-yellow-300 text-black' : vipLabel === 'VIP' ? 'bg-teal-500 hover:bg-teal-600 text-white' : 'bg-gray-100 hover:bg-gray-200 text-gray-800'}`}
 											>
 												{vipLabel}
 											</Badge>

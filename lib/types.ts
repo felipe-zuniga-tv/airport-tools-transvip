@@ -20,6 +20,24 @@ export interface AirportVehicleDetail {
     vehicle_type: string
 }
 
+export type InboundAirportVehicleStatus =
+    | 'assigned'
+    | 'on_road'
+    | 'approaching';
+
+export interface InboundAirportVehicle {
+    unique_car_id: string;
+    fleet_name: string;
+    vehicle_type: string;
+    vehicle_type_name: string;
+    vehicle_contract_type?: string;
+    service_name?: string;
+    eta_minutes: number;
+    eta_updated_at: string;
+    passenger_count: number;
+    status?: InboundAirportVehicleStatus;
+}
+
 export interface Props {
     vehicleTypesList: AirportVehicleType[];
     zone: AirportZone;

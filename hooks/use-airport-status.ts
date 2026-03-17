@@ -8,6 +8,7 @@ export function useAirportStatus(
     selectedZone: AirportZone,
     secondsToUpdate: number,
     initialVehicleTypes: AirportVehicleType[] = [],
+    enabled = true,
 ) {
     const [vehicleTypes, setVehicleTypes] = useState<AirportVehicleType[]>(initialVehicleTypes);
     const [vehicleList, setVehicleList] = useState<AirportVehicleDetail[]>([]);
@@ -15,6 +16,10 @@ export function useAirportStatus(
     const latestRequestIdRef = useRef(0);
 
     const fetchUpdates = useCallback(async () => {
+        if (!enabled) {
+            return null;
+        }
+
         const requestId = latestRequestIdRef.current + 1;
         latestRequestIdRef.current = requestId;
 
@@ -60,13 +65,18 @@ export function useAirportStatus(
                 setIsLoading(false);
             }
         }
-    }, [selectedZone.branch_id, selectedZone.zone_id]);
+    }, [enabled, selectedZone.branch_id, selectedZone.zone_id]);
 
     useEffect(() => {
+        if (!enabled) {
+            setIsLoading(false);
+            return;
+        }
+
         fetchUpdates();
         const interval = setInterval(fetchUpdates, secondsToUpdate * 1000);
         return () => clearInterval(interval);
-    }, [fetchUpdates, secondsToUpdate]);
+    }, [enabled, fetchUpdates, secondsToUpdate]);
 
     return { vehicleTypes, vehicleList, isLoading, fetchUpdates };
 }

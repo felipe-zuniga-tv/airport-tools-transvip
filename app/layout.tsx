@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Plus_Jakarta_Sans, Red_Hat_Display } from "next/font/google";
 import "./globals.css";
 
-const plusJakartaSans = Plus_Jakarta_Sans({ subsets: ["latin"] });
+const font = Red_Hat_Display({ subsets: ["latin"], weight: ["400", "500", "700"] });
+// const font = Plus_Jakarta_Sans({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
 	title: "Transvip Chile",
@@ -16,7 +17,7 @@ export default function RootLayout({
 }>) {
 	return (
 		<html lang="en">
-			<body className={plusJakartaSans.className}>
+			<body className={font.className}>
 				{children}
 			</body>
 		</html>

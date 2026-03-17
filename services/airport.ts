@@ -1,5 +1,9 @@
 import { unwrapApiEnvelope } from "@/lib/api/client";
-import { AirportVehicleDetail, AirportVehicleType } from "@/lib/types";
+import {
+	AirportVehicleDetail,
+	AirportVehicleType,
+	InboundAirportVehicle,
+} from "@/lib/types";
 
 export const airportService = {
     async refreshDashboard(zoneId: number) {
@@ -10,6 +14,11 @@ export const airportService = {
     async getVehicles(branchId: number, zoneId: number, vehicleId: number[]) {
         const response = await fetch(`/api/airport/get-vehicles-dashboard?branchId=${branchId}&zoneId=${zoneId}&vehicleId=${vehicleId}`);
         return unwrapApiEnvelope<AirportVehicleDetail[]>(response, 'Failed to fetch vehicle list');
+    },
+
+    async getInboundVehicles(zoneId: number) {
+        const response = await fetch(`/api/airport/inbound-vehicles?zoneId=${zoneId}`);
+        return unwrapApiEnvelope<InboundAirportVehicle[]>(response, 'Failed to fetch inbound vehicles');
     },
 
     async deleteVehicle(zoneId: number, fleetId: number) {
