@@ -15,7 +15,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import TextValue from '@/components/common/text-value';
-import { readApiEnvelope } from '@/lib/api/client';
+import { unwrapApiEnvelope } from '@/lib/api/client';
 import { IBookingInfoOutput } from '@/lib/main/types';
 
 export function QRCodeGeneratorDialog({ session }: {
@@ -54,7 +54,7 @@ export function QRCodeGeneratorDialog({ session }: {
 		}
 
 		// Fetch booking info before generating the QR code
-		const bookingInfoResponse = await fetch('/api/booking/get-booking-info', {
+		const bookingInfoResponse = await fetch('/api/booking/get-booking-detail', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
@@ -64,23 +64,21 @@ export function QRCodeGeneratorDialog({ session }: {
 
 		setIsLoading(false);
 
-		if (bookingInfoResponse.ok) {
-			const { data: bookingInfo } = await readApiEnvelope<IBookingInfoOutput[]>(bookingInfoResponse);
+		try {
+			const bookingInfo = await unwrapApiEnvelope<IBookingInfoOutput>(
+				bookingInfoResponse,
+				'Error fetching booking information',
+			);
 
-			if (!bookingInfo?.length) {
-				setErrorMessage('Reserva no fue encontrada');
-				return
-			}
-
-			const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z' || bookingInfo[0].booking.type_of_trip === 'P'
+			const bookingZarpe = bookingInfo.booking.type_of_trip === 'Z' || bookingInfo.booking.type_of_trip === 'P'
 
 			if (bookingZarpe) {
-				setPassengerName(bookingInfo[0].customer.full_name)
-				setServiceName(bookingInfo[0].booking.service_name)
-				setPaxCount(Number(bookingInfo[0].booking.pax_count))
-				setDestinationAddress(bookingInfo[0].directions.destination.address);
-				setVipLabel(bookingInfo[0].customer.vip_label);
-				setSharedServiceId(bookingInfo[0].booking.shared_service_id ?? null);
+				setPassengerName(bookingInfo.customer.full_name)
+				setServiceName(bookingInfo.booking.service_name)
+				setPaxCount(Number(bookingInfo.booking.pax_count))
+				setDestinationAddress(bookingInfo.directions.destination.address);
+				setVipLabel(bookingInfo.customer.vip_label);
+				setSharedServiceId(bookingInfo.booking.shared_service_id ?? null);
 
 				// Generate QR code only if booking is found
 				const qrData = encodeURIComponent(`{"booking_id":${bookingNumber},"url":"www.transvip.cl/"}`);
@@ -100,13 +98,12 @@ export function QRCodeGeneratorDialog({ session }: {
 						timestamp: new Date().toISOString(),
 					}),
 				});
-			} else if (!bookingZarpe) {
-				setErrorMessage('Reserva no es de tipo Zarpe');
 			} else {
-				setErrorMessage('Reserva no encontrada');
+				setErrorMessage('Reserva no es de tipo Zarpe');
 			}
-		} else {
-			setErrorMessage('Error fetching booking information');
+		} catch (error) {
+			console.error(error);
+			setErrorMessage(error instanceof Error ? error.message : 'Error fetching booking information');
 		}
 	};
 

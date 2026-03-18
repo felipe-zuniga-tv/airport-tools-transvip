@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { format } from 'date-fns'
 import Link from 'next/link'
 import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
@@ -62,12 +62,6 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
         AIRPORT_CONSTANTS.SECONDS_TO_UPDATE_INBOUND,
         inboundEnabled && !isZoneView,
     );
-
-    useEffect(() => {
-        if (!inboundEnabled && selectedView === 'inbound') {
-            setSelectedView('in_zone');
-        }
-    }, [inboundEnabled, selectedView]);
 
     const handleDeleteVehicle = useCallback((vehicle: AirportVehicleDetail) => {
         setVehicleToDelete(vehicle);
@@ -359,8 +353,7 @@ function AirportHeader({ selectedZone, session }: {
                     </span>
                 </div>
             </div>
-            {/* <BookingSearchDialog /> */}
-            <QRCodeScannerDialog session={session} />
+            <QRCodeScannerDialog />
             <QRCodeGeneratorDialog session={session} />
             <LiveClock className='mx-auto md:ml-auto' />
         </header>

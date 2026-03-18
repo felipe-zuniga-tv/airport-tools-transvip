@@ -14,12 +14,10 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import TextValue from '@/components/common/text-value';
-import { readApiEnvelope } from '@/lib/api/client';
+import { unwrapApiEnvelope } from '@/lib/api/client';
 import { IBookingInfoOutput } from '@/lib/main/types';
 
-export function QRCodeScannerDialog({ session }: {
-	session: any
-}) {
+export function QRCodeScannerDialog() {
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [isScanning, setIsScanning] = useState<boolean>(true);
 	const [passengerName, setPassengerName] = useState<string | null>(null);
@@ -72,7 +70,7 @@ export function QRCodeScannerDialog({ session }: {
 			setBookingId(scannedBookingId);
 
 			// Fetch booking info
-			const bookingInfoResponse = await fetch('/api/booking/get-booking-info', {
+			const bookingInfoResponse = await fetch('/api/booking/get-booking-detail', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
@@ -80,28 +78,22 @@ export function QRCodeScannerDialog({ session }: {
 				body: JSON.stringify({ bookingId: scannedBookingId }),
 			});
 
-			if (bookingInfoResponse.ok) {
-				const { data: bookingInfo } = await readApiEnvelope<IBookingInfoOutput[]>(bookingInfoResponse);
+			const bookingInfo = await unwrapApiEnvelope<IBookingInfoOutput>(
+				bookingInfoResponse,
+				'Error al obtener información de la reserva',
+			);
 
-				if (!bookingInfo?.length) {
-					setErrorMessage('Reserva no encontrada');
-					return;
-				}
+			const bookingZarpe = bookingInfo.booking.type_of_trip === 'Z';
 
-				const bookingZarpe = bookingInfo[0].booking.type_of_trip === 'Z';
-
-				if (bookingZarpe) {
-					setPassengerName(bookingInfo[0].customer.full_name);
-					setServiceName(bookingInfo[0].booking.service_name);
-					setPaxCount(Number(bookingInfo[0].booking.pax_count));
-					setDestinationAddress(bookingInfo[0].directions.destination.address);
-					setVipLabel(bookingInfo[0].customer.vip_label);
-					setSharedServiceId(bookingInfo[0].booking.shared_service_id ?? null);
-				} else {
-					setErrorMessage('Reserva no es de tipo Zarpe');
-				}
+			if (bookingZarpe) {
+				setPassengerName(bookingInfo.customer.full_name);
+				setServiceName(bookingInfo.booking.service_name);
+				setPaxCount(Number(bookingInfo.booking.pax_count));
+				setDestinationAddress(bookingInfo.directions.destination.address);
+				setVipLabel(bookingInfo.customer.vip_label);
+				setSharedServiceId(bookingInfo.booking.shared_service_id ?? null);
 			} else {
-				setErrorMessage('Error al obtener información de la reserva');
+				setErrorMessage('Reserva no es de tipo Zarpe');
 			}
 		} catch (error: any) {
 			console.error(error);
@@ -147,6 +139,9 @@ export function QRCodeScannerDialog({ session }: {
 									torch: false,
 									zoom: false,
 									finder: true,
+								}}
+								constraints={{
+									facingMode: 'environment',
 								}}
 								styles={{
 									container: { width: '100%', height: '100%' }
