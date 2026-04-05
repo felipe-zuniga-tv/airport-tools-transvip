@@ -16,6 +16,7 @@ import {
 import TextValue from '@/components/common/text-value';
 import { cn } from '@/lib/utils';
 import { readApiEnvelope, unwrapApiEnvelope } from '@/lib/api/client';
+import { getBoardScanRejectedMessage } from '@/lib/board/constants';
 import { IBookingInfoOutput } from '@/lib/main/types';
 
 interface QRCodeScannerDialogProps {
@@ -99,6 +100,13 @@ export function QRCodeScannerDialog({
 			const bookingZarpe = bookingInfo.booking.type_of_trip === 'Z';
 
 			if (bookingZarpe) {
+				const statusReject = getBoardScanRejectedMessage(
+					bookingInfo.booking.status,
+				);
+				if (statusReject) {
+					throw new Error(statusReject);
+				}
+
 				const scanRes = await fetch('/api/board/scan', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },

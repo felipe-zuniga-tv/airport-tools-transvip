@@ -2,6 +2,7 @@ import { z } from 'zod';
 import { getSession } from '@/lib/auth';
 import { getBookingInfo } from '@/lib/main/functions';
 import { apiError, apiSuccess } from '@/lib/api/response';
+import { getBoardScanRejectedMessage } from '@/lib/board/constants';
 import { getSupabaseAdmin } from '@/lib/supabase/admin';
 
 const bodySchema = z.object({
@@ -67,6 +68,11 @@ export async function POST(request: Request) {
 
 	if (detail.branch?.branch_id !== branchId) {
 		return apiError('La reserva no pertenece a esta sucursal.', 403);
+	}
+
+	const statusBlock = getBoardScanRejectedMessage(detail.booking.status);
+	if (statusBlock) {
+		return apiError(statusBlock, 400);
 	}
 
 	const destLat = parseCoord(detail.directions.destination.latitude);
