@@ -10,5 +10,8 @@ export const Routes = Object.freeze({
         ZI_ANF: '/aeropuerto/zi/anf',
         ZI_CJC: '/aeropuerto/zi/cjc',
         ZI_CJC_LOS_OLIVOS: '/aeropuerto/zi/cjc2',
+        /** Waiting board (tablero) for an airport code e.g. `scl`, `anf`. */
+        ziBoard: (airportCode: string) =>
+            `/aeropuerto/zi/${airportCode.toLowerCase()}/tablero`,
     }
 })

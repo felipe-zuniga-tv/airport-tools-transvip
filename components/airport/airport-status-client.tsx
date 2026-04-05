@@ -2,15 +2,9 @@
 
 import { useState, useCallback, useMemo } from 'react'
 import { format } from 'date-fns'
-import Link from 'next/link'
-import { ArrowLeft, Clock, TrashIcon, Users } from 'lucide-react'
-import { TransvipLogo } from '../transvip/transvip-logo'
+import { Clock, TrashIcon, Users } from 'lucide-react'
 import { calculateDuration, cn } from '@/lib/utils'
-import { LiveClock } from '../ui/live-clock'
 import { AirportZone, airportZones } from '@/lib/config/airport'
-import { Routes } from '@/utils/routes'
-import { QRCodeGeneratorDialog } from '../qr/qr-code-generator-dialog'
-import { QRCodeScannerDialog } from '../qr/qr-code-scanner-dialog'
 import { Button } from '../ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/dialog';
 import { airportService } from '@/services/airport'
@@ -24,6 +18,7 @@ import { LoadingMessage } from '../ui/loading'
 import { useAirportStatus } from '@/hooks/use-airport-status'
 import { useAirportInbound } from '@/hooks/use-airport-inbound'
 import { fixName } from '@/lib/utils'
+import { AirportZiShellHeader } from '@/components/airport/airport-zi-shell-header'
 
 type AirportDashboardView = 'in_zone' | 'inbound'
 type DashboardToggleOrientation = 'horizontal' | 'vertical'
@@ -32,10 +27,26 @@ type VehicleTypeToggle = {
     count: number | null
 }
 
-export default function AirportStatusClient({ vehicleTypesList, zone: initialZoneId, session }: {
+export type SharedZoneStatus = {
+    vehicleTypes: AirportVehicleType[]
+    vehicleList: AirportVehicleDetail[]
+    isLoading: boolean
+    fetchUpdates: () => Promise<unknown>
+}
+
+export default function AirportStatusClient({
+    vehicleTypesList,
+    zone: initialZoneId,
+    session,
+    hideHeader = false,
+    sharedZoneStatus,
+}: {
     vehicleTypesList: AirportVehicleType[]
     zone: AirportZone
-    session: any
+    session: unknown
+    hideHeader?: boolean
+    /** When set (e.g. workspace shell), zone polling runs once in the parent. */
+    sharedZoneStatus?: SharedZoneStatus
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
     const [selectedView, setSelectedView] = useState<AirportDashboardView>('in_zone');
@@ -46,12 +57,14 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
     const inboundEnabled = selectedZone.enable_inbound;
     const isZoneView = selectedView === 'in_zone';
 
-    const { vehicleTypes, vehicleList, isLoading, fetchUpdates } = useAirportStatus(
+    const internalZoneStatus = useAirportStatus(
         selectedZone,
         AIRPORT_CONSTANTS.SECONDS_TO_UPDATE,
         vehicleTypesList,
-        isZoneView,
+        !sharedZoneStatus && isZoneView,
     );
+    const { vehicleTypes, vehicleList, isLoading, fetchUpdates } =
+        sharedZoneStatus ?? internalZoneStatus;
     const {
         vehicleList: inboundVehicles,
         isLoading: isInboundLoading,
@@ -144,9 +157,15 @@ export default function AirportStatusClient({ vehicleTypesList, zone: initialZon
         : isInboundLoading || !hasInboundLoaded;
 
     return (
-        <div className="flex flex-col h-screen bg-gray-100">
-            {/* Header */}
-            <AirportHeader selectedZone={selectedZone} session={session} />
+        <div
+            className={cn(
+                'flex flex-col bg-gray-100',
+                hideHeader ? 'h-full min-h-0 flex-1' : 'h-screen',
+            )}
+        >
+            {!hideHeader && (
+                <AirportZiShellHeader zone={selectedZone} session={session} />
+            )}
 
             <div className="flex min-h-0 flex-1 flex-col">
                 <DashboardControls
@@ -328,35 +347,6 @@ function DashboardViewToggle({
                 </button>
             )}
         </div>
-    )
-}
-
-// New component for the header
-function AirportHeader({ selectedZone, session }: {
-    selectedZone: AirportZone
-    session: any
-}) {
-    return (
-        <header className="bg-transvip/90 shadow-md p-4 flex flex-col sm:flex-row justify-center sm:justify-start items-center gap-2 sm:gap-4">
-            <div className='w-full flex flex-row items-center justify-center sm:justify-start gap-4'>
-                <TransvipLogo size={36} colored={false} logoOnly={true} className='' />
-                <div className='flex flex-col gap-1 justify-start'>
-                    <div className='flex flex-row gap-1 items-center justify-center md:justify-start w-full'>
-                        <span className="text-lg lg:text-xl font-bold text-white">Zona Iluminada</span>
-                        <span className="text-lg lg:text-xl font-bold text-white">·</span>
-                        <span className="text-lg lg:text-xl font-bold text-white">{selectedZone.city_name}</span>
-                    </div>
-                    <span className='bg-transvip-dark hover:bg-orange-900 p-1 px-4 rounded-full w-fit'>
-                        <Link href={Routes.AIRPORT.HOME} className='text-xs text-white font-semibold flex gap-0 items-center'>
-                            <ArrowLeft className='w-4 h-4 font-bold mr-1' /> Volver al inicio
-                        </Link>
-                    </span>
-                </div>
-            </div>
-            <QRCodeScannerDialog />
-            <QRCodeGeneratorDialog session={session} />
-            <LiveClock className='mx-auto md:ml-auto' />
-        </header>
     )
 }
 

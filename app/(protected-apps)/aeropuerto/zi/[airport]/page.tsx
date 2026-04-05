@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { SuspenseLoading } from '@/components/ui/suspense'
-import AirportStatusClient from '@/components/airport/airport-status-client'
+import { AirportZiWorkspace } from '@/components/airport/airport-zi-workspace'
 import { getZonaIluminadaServices } from '@/lib/main/functions'
 import { AirportZone, airportZones } from '@/lib/config/airport'
 import { getSession } from '@/lib/auth'
@@ -23,5 +23,7 @@ async function AirportStatusDashboard({ zone }: { zone: AirportZone }) {
   const session = await getSession()
   const data = await getZonaIluminadaServices(zone.zone_id)
 
-  return <AirportStatusClient vehicleTypesList={data} zone={zone} session={session} />
+  return (
+    <AirportZiWorkspace vehicleTypesList={data} zone={zone} session={session} />
+  )
 }

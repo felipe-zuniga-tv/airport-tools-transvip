@@ -482,10 +482,9 @@ async function processBookingInfo(results: IBookingInfo[], accessToken: string):
                 type: vehicleDetail?.type.name
             },
             customer: {
-                // vip_flag: customer_category_name.toUpperCase() === 'VIP' || customer_category_name.toUpperCase() === 'SUPERVIP',
-                // vip_label: customer_category_name === '' ? 'NO VIP' : customer_category_name.toUpperCase(),
                 vip_flag: customer_category_name ? (customer_category_name.toUpperCase() === 'VIP' || customer_category_name.toUpperCase() === 'SUPERVIP') : false,
                 vip_label: customer_category_name ? (customer_category_name === '' ? 'NO VIP' : customer_category_name.toUpperCase()) : 'NO VIP',
+                category_name: (customer_category_name ?? '').trim() || '—',
                 full_name: pax_full_name,
                 phone_number: pax_phone_number,
                 email: job_pickup_email,

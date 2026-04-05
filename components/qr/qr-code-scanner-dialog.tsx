@@ -14,10 +14,23 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import TextValue from '@/components/common/text-value';
-import { unwrapApiEnvelope } from '@/lib/api/client';
+import { cn } from '@/lib/utils';
+import { readApiEnvelope, unwrapApiEnvelope } from '@/lib/api/client';
 import { IBookingInfoOutput } from '@/lib/main/types';
 
-export function QRCodeScannerDialog() {
+interface QRCodeScannerDialogProps {
+	branchId: number;
+	/** Called after a Zarpe QR is registered on the board (e.g. refresh tablero). */
+	onBoardScanSuccess?: () => void;
+	/** Extra classes for the trigger button (e.g. on colored headers). */
+	triggerClassName?: string;
+}
+
+export function QRCodeScannerDialog({
+	branchId,
+	onBoardScanSuccess,
+	triggerClassName,
+}: QRCodeScannerDialogProps) {
 	const [errorMessage, setErrorMessage] = useState<string>('');
 	const [isScanning, setIsScanning] = useState<boolean>(true);
 	const [passengerName, setPassengerName] = useState<string | null>(null);
@@ -86,12 +99,28 @@ export function QRCodeScannerDialog() {
 			const bookingZarpe = bookingInfo.booking.type_of_trip === 'Z';
 
 			if (bookingZarpe) {
+				const scanRes = await fetch('/api/board/scan', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						bookingId: scannedBookingId,
+						branchId,
+					}),
+				});
+				const scanPayload = await readApiEnvelope<{ ok: boolean }>(scanRes);
+				if (!scanRes.ok || scanPayload.error) {
+					throw new Error(
+						scanPayload.error ?? 'No se pudo registrar en el tablero de espera',
+					);
+				}
+
 				setPassengerName(bookingInfo.customer.full_name);
 				setServiceName(bookingInfo.booking.service_name);
 				setPaxCount(Number(bookingInfo.booking.pax_count));
 				setDestinationAddress(bookingInfo.directions.destination.address);
 				setVipLabel(bookingInfo.customer.vip_label);
 				setSharedServiceId(bookingInfo.booking.shared_service_id ?? null);
+				onBoardScanSuccess?.();
 			} else {
 				setErrorMessage('Reserva no es de tipo Zarpe');
 			}
@@ -118,7 +147,10 @@ export function QRCodeScannerDialog() {
 	return (
 		<Dialog onOpenChange={(open) => { if (!open) handleReset(); }}>
 			<DialogTrigger asChild>
-				<Button variant="outline" className="text-lg h-full px-6 gap-2">
+				<Button
+					variant="outline"
+					className={cn('text-lg h-full px-6 gap-2', triggerClassName)}
+				>
 					<ScanLine className='size-6 shrink-0' />
 					<span className='font-normal'>Escanear QR</span>
 				</Button>

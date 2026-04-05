@@ -141,6 +141,8 @@ export interface IBookingInfoOutput {
     customer: {
         vip_flag: boolean
         vip_label: string
+        /** Raw category from API (e.g. VIP, convenio name). */
+        category_name: string
         first_name?: string
         last_name?: string
         full_name: string
