@@ -68,7 +68,7 @@ export const AirportZiWorkspace = ({
 	const ziTabLabel = useMemo(() => {
 		const m = formatTypeCount(minibusCount)
 		const s = formatTypeCount(sedanCount)
-		return `Zona Iluminada, Minibus ${m}, Sedan ${s}`
+		return `Zona Iluminada, Minibus ${m}, Taxi ${s}`
 	}, [minibusCount, sedanCount])
 
 	return (
