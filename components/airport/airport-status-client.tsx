@@ -40,6 +40,7 @@ export default function AirportStatusClient({
     session,
     hideHeader = false,
     sharedZoneStatus,
+    fixedDashboardView,
 }: {
     vehicleTypesList: AirportVehicleType[]
     zone: AirportZone
@@ -47,15 +48,21 @@ export default function AirportStatusClient({
     hideHeader?: boolean
     /** When set (e.g. workspace shell), zone polling runs once in the parent. */
     sharedZoneStatus?: SharedZoneStatus
+    /** Locks En Aeropuerto vs En camino; hides the internal toggle (use top-level tabs instead). */
+    fixedDashboardView?: AirportDashboardView
 }) {
     const [selectedZone] = useState(initialZoneId || airportZones[0]);
     const [selectedView, setSelectedView] = useState<AirportDashboardView>('in_zone');
+    const effectiveView = fixedDashboardView ?? selectedView;
+    const isZoneView = effectiveView === 'in_zone';
+    const showViewToggle = Boolean(
+        selectedZone.enable_inbound && fixedDashboardView == null,
+    );
     const [selectedType, setSelectedType] = useState(vehicleTypesList?.length ? vehicleTypesList[0].name : '');
     const [selectedInboundType, setSelectedInboundType] = useState('');
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [vehicleToDelete, setVehicleToDelete] = useState<AirportVehicleDetail | null>(null);
     const inboundEnabled = selectedZone.enable_inbound;
-    const isZoneView = selectedView === 'in_zone';
 
     const internalZoneStatus = useAirportStatus(
         selectedZone,
@@ -154,7 +161,9 @@ export default function AirportStatusClient({
     }, [activeSelectedInboundType, inboundVehiclesNotInZone]);
     const isActiveViewLoading = isZoneView
         ? isLoading
-        : isInboundLoading || !hasInboundLoaded;
+        : inboundEnabled
+            ? isInboundLoading || !hasInboundLoaded
+            : false;
 
     return (
         <div
@@ -168,18 +177,21 @@ export default function AirportStatusClient({
             )}
 
             <div className="flex min-h-0 flex-1 flex-col">
-                <DashboardControls
-                    inboundEnabled={inboundEnabled}
-                    isZoneView={isZoneView}
-                    vehicleTypes={vehicleTypes}
-                    selectedType={activeSelectedType}
-                    onSelectedTypeChange={setSelectedType}
-                    inboundVehicleTypes={inboundVehicleTypes}
-                    selectedInboundType={activeSelectedInboundType}
-                    onSelectedInboundTypeChange={setSelectedInboundType}
-                    selectedView={selectedView}
-                    onViewChange={setSelectedView}
-                />
+                {(isZoneView || inboundEnabled) && (
+                    <DashboardControls
+                        inboundEnabled={inboundEnabled}
+                        isZoneView={isZoneView}
+                        showViewToggle={showViewToggle}
+                        vehicleTypes={vehicleTypes}
+                        selectedType={activeSelectedType}
+                        onSelectedTypeChange={setSelectedType}
+                        inboundVehicleTypes={inboundVehicleTypes}
+                        selectedInboundType={activeSelectedInboundType}
+                        onSelectedInboundTypeChange={setSelectedInboundType}
+                        selectedView={effectiveView}
+                        onViewChange={setSelectedView}
+                    />
+                )}
 
                 {isActiveViewLoading && (
                     <div className='flex flex-1 items-center justify-center'>
@@ -199,6 +211,10 @@ export default function AirportStatusClient({
                                     enableDeleteButton={selectedZone.enable_delete}
                                 />
                             </>
+                        ) : !inboundEnabled ? (
+                            <div className='flex flex-1 items-center justify-center p-8 text-center text-lg font-medium text-slate-600'>
+                                En camino no está habilitado para este aeropuerto.
+                            </div>
                         ) : (
                             <>
                                 {inboundError && (
@@ -228,6 +244,7 @@ export default function AirportStatusClient({
 function DashboardControls({
     inboundEnabled,
     isZoneView,
+    showViewToggle,
     vehicleTypes,
     selectedType,
     onSelectedTypeChange,
@@ -239,6 +256,7 @@ function DashboardControls({
 }: {
     inboundEnabled: boolean
     isZoneView: boolean
+    showViewToggle: boolean
     vehicleTypes: AirportVehicleType[]
     selectedType: string
     onSelectedTypeChange: (type: string) => void
@@ -251,7 +269,7 @@ function DashboardControls({
     return (
         <div className='bg-white p-4'>
             <div className='flex flex-col gap-4 lg:flex-row-reverse lg:items-stretch'>
-                {inboundEnabled && (
+                {inboundEnabled && showViewToggle && (
                     <div className='w-full lg:w-56 lg:shrink-0 rounded-2xl lg:bg-slate-50 p-0 items-center justify-center flex shadow-sm'>
                         <div className='lg:hidden'>
                             <DashboardViewToggle
@@ -358,7 +376,7 @@ function VehicleTypes({ vehicleTypes, handleSelectedType, selectedType }: {
     if (!vehicleTypes || vehicleTypes.length === 0) return null
 
     return (
-        <div className='flex flex-row gap-4 overflow-x-auto pb-1 text-2xl justify-center'>
+        <div className='flex flex-row gap-4 overflow-x-auto text-2xl justify-center'>
             {vehicleTypes.map((vType) => (
                 <div key={vType.name}
                     onClick={() => handleSelectedType(vType.name)}

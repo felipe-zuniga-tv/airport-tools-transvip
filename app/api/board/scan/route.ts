@@ -81,6 +81,9 @@ export async function POST(request: Request) {
 	const serviceName = detail.booking.service_name?.trim() || '—';
 	const destinationAddress = detail.directions.destination.address?.trim() || null;
 
+	console.log(detail.booking)
+	const sharedServiceId = detail.booking.shared_service_id ? Number(detail.booking.shared_service_id) : null;
+
 	const row = {
 		booking_id: bookingId,
 		branch_id: branchId,
@@ -90,6 +93,7 @@ export async function POST(request: Request) {
 		destination_address: destinationAddress,
 		dest_lat: destLat,
 		dest_lng: destLng,
+		shared_service_id: sharedServiceId,
 	};
 
 	// board_entries first: avoids orphan rows in scan_events when the board insert

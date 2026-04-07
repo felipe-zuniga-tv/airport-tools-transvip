@@ -1,15 +1,19 @@
 'use client'
 
-import { useMemo, useRef, useState } from 'react'
-import { BusFront, CarTaxiFront, Sun, Users } from 'lucide-react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { BusFront, CarTaxiFront, Truck, Users } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { readApiEnvelope } from '@/lib/api/client'
 import type { AirportZone } from '@/lib/config/airport'
 import { AIRPORT_CONSTANTS } from '@/lib/config/airport'
+import type { BoardActiveResponse } from '@/lib/board/types'
 import type { AirportVehicleType } from '@/lib/types'
 import { useAirportStatus } from '@/hooks/use-airport-status'
 import { AirportZiShellHeader } from '@/components/airport/airport-zi-shell-header'
 import AirportStatusClient from '@/components/airport/airport-status-client'
 import { WaitingBoardClient } from '@/components/board/waiting-board-client'
+
+const BOARD_SUMMARY_POLL_MS = 22_000
 
 function countForFirstMatchingType(
 	types: AirportVehicleType[],
@@ -28,7 +32,7 @@ function formatTypeCount(value: number | null | undefined) {
 	return value
 }
 
-type WorkspaceTab = 'zi' | 'pasajeros'
+type WorkspaceTab = 'zi' | 'inbound' | 'pasajeros'
 
 interface AirportZiWorkspaceProps {
 	zone: AirportZone
@@ -42,7 +46,36 @@ export const AirportZiWorkspace = ({
 	vehicleTypesList,
 }: AirportZiWorkspaceProps) => {
 	const [tab, setTab] = useState<WorkspaceTab>('zi')
+	/** Latest board payload from polling — shared with Pasajeros tab so counts match before child fetch completes. */
+	const [boardSnapshot, setBoardSnapshot] = useState<BoardActiveResponse | null>(
+		null,
+	)
 	const boardReloadRef = useRef<(() => void) | null>(null)
+
+	const loadBoardSummary = useCallback(async () => {
+		try {
+			const res = await fetch(
+				`/api/board/active?branchId=${encodeURIComponent(String(zone.branch_id))}`,
+				{ cache: 'no-store' },
+			)
+			const payload = await readApiEnvelope<BoardActiveResponse>(res)
+			if (!res.ok || payload.error || payload.data === null) {
+				return
+			}
+			setBoardSnapshot(payload.data)
+		} catch {
+			// keep last value
+		}
+	}, [zone.branch_id])
+
+	useEffect(() => {
+		const t = window.setTimeout(() => void loadBoardSummary(), 0)
+		const id = window.setInterval(() => void loadBoardSummary(), BOARD_SUMMARY_POLL_MS)
+		return () => {
+			window.clearTimeout(t)
+			window.clearInterval(id)
+		}
+	}, [loadBoardSummary])
 
 	const sharedZoneStatus = useAirportStatus(
 		zone,
@@ -76,7 +109,10 @@ export const AirportZiWorkspace = ({
 			<AirportZiShellHeader
 				zone={zone}
 				session={session}
-				onBoardScanSuccess={() => boardReloadRef.current?.()}
+				onBoardScanSuccess={() => {
+					boardReloadRef.current?.()
+					void loadBoardSummary()
+				}}
 			/>
 
 			<div
@@ -132,8 +168,35 @@ export const AirportZiWorkspace = ({
 				<button
 					type="button"
 					role="tab"
+					aria-selected={tab === 'inbound'}
+					aria-label="En camino, vehículos inbound"
+					className={cn(
+						'flex flex-1 items-center justify-center gap-2 px-2 py-3 text-sm font-semibold transition-colors sm:text-base',
+						tab === 'inbound'
+							? 'border-b-2 border-orange-600 text-orange-700'
+							: 'text-slate-500 hover:text-slate-800',
+						!zone.enable_inbound && 'hidden opacity-50',
+					)}
+					onClick={() => setTab('inbound')}
+				>
+					<Truck
+						className={cn(
+							'size-5 shrink-0 sm:size-6',
+							tab === 'inbound' ? 'text-orange-600' : 'text-slate-400',
+						)}
+						aria-hidden
+					/>
+					<span>En camino</span>
+				</button>
+				<button
+					type="button"
+					role="tab"
 					aria-selected={tab === 'pasajeros'}
-					aria-label="Pasajeros, tablero de espera"
+					aria-label={
+						boardSnapshot != null
+							? `Pasajeros, tablero de espera, ${boardSnapshot.total_pax} pasajeros en total`
+							: 'Pasajeros, tablero de espera'
+					}
 					className={cn(
 						'flex flex-1 items-center justify-center gap-2 px-2 py-3 text-sm font-semibold transition-colors sm:text-base',
 						tab === 'pasajeros'
@@ -149,7 +212,17 @@ export const AirportZiWorkspace = ({
 						)}
 						aria-hidden
 					/>
-					<span>Pasajeros</span>
+					<span className="flex items-center gap-2">
+						Pasajeros
+						<span
+							className={cn(
+								'flex min-w-6 items-center justify-center rounded-full px-2 py-0.5 text-xs font-bold text-white tabular-nums',
+								tab === 'pasajeros' ? 'bg-orange-600' : 'bg-slate-400',
+							)}
+						>
+							{boardSnapshot?.total_pax ?? '—'}
+						</span>
+					</span>
 				</button>
 			</div>
 
@@ -161,6 +234,17 @@ export const AirportZiWorkspace = ({
 						session={session}
 						hideHeader
 						sharedZoneStatus={sharedZoneStatus}
+						fixedDashboardView="in_zone"
+					/>
+				)}
+				{tab === 'inbound' && (
+					<AirportStatusClient
+						vehicleTypesList={vehicleTypesList}
+						zone={zone}
+						session={session}
+						hideHeader
+						sharedZoneStatus={sharedZoneStatus}
+						fixedDashboardView="inbound"
 					/>
 				)}
 				{tab === 'pasajeros' && (
@@ -168,6 +252,7 @@ export const AirportZiWorkspace = ({
 						zone={zone}
 						hideHeader
 						boardReloadRef={boardReloadRef}
+						initialSnapshot={boardSnapshot}
 					/>
 				)}
 			</div>

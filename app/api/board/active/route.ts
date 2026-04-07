@@ -85,6 +85,7 @@ export async function GET(request: Request) {
 
 	const totalPax = items.reduce((s, i) => s + i.pax_count, 0);
 	const sharedPaxWaiting = shared.reduce((s, i) => s + i.pax_count, 0);
+	const exclusivePaxWaiting = exclusive.reduce((s, i) => s + i.pax_count, 0);
 
 	const payload: BoardActiveResponse = {
 		shared,
@@ -93,6 +94,7 @@ export async function GET(request: Request) {
 		total_bookings: items.length,
 		total_pax: totalPax,
 		shared_pax_waiting: sharedPaxWaiting,
+		exclusive_pax_waiting: exclusivePaxWaiting,
 	};
 
 	return apiSuccess(payload);

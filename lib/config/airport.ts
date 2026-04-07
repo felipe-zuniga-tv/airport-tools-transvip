@@ -37,6 +37,4 @@ export const airportTools = [
   { name: 'Zona Iluminada ANF', href: Routes.AIRPORT.ZI_ANF, active: true },
   { name: 'Zona Iluminada CJC', href: Routes.AIRPORT.ZI_CJC, active: true },
   { name: 'Zona Iluminada CJC (Los Olivos)', href: Routes.AIRPORT.ZI_CJC_LOS_OLIVOS, active: true },
-  { name: 'Crear código QR', href: Routes.QR_GEN, active: false },
-  { name: 'Reservas Programadas', href: '#', active: false },
 ]; // Add more tools as needed

@@ -1,7 +1,19 @@
 import type { ApiEnvelope } from "@/lib/api/response";
 
 export async function readApiEnvelope<T>(response: Response) {
-	return (await response.json()) as ApiEnvelope<T>;
+	const text = await response.text();
+	if (!text.trim()) {
+		throw new Error(
+			`Respuesta vacía del servidor (${response.status} ${response.statusText || ""}).`,
+		);
+	}
+	try {
+		return JSON.parse(text) as ApiEnvelope<T>;
+	} catch {
+		throw new Error(
+			`Respuesta no es JSON válido (${response.status}): ${text.slice(0, 200)}`,
+		);
+	}
 }
 
 export async function unwrapApiEnvelope<T>(

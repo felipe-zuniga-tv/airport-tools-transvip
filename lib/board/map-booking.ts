@@ -16,10 +16,13 @@ export function boardItemFromLive(
 	const destLng =
 		parseCoord(detail.directions.destination.longitude) ?? entry.dest_lng;
 
+	const contract = detail.booking.contract_name?.trim() ?? '';
+
 	return {
 		booking_id: entry.booking_id,
 		scanned_at: entry.scanned_at,
 		service_name: detail.booking.service_name,
+		agreement_name: contract || '—',
 		pax_count: Number(detail.booking.pax_count) || entry.pax_count,
 		destination_address:
 			detail.directions.destination.address || entry.destination_address,
@@ -30,6 +33,10 @@ export function boardItemFromLive(
 		customer_phone: detail.customer.phone_number,
 		customer_email: detail.customer.email,
 		customer_category: detail.customer.category_name,
+		shared_service_id:
+			detail.booking.shared_service_id ||
+			entry.shared_service_id ||
+			null,
 		stale: false,
 	};
 }
@@ -39,6 +46,7 @@ export function boardItemFromSnapshot(entry: BoardEntryRow): BoardListItem {
 		booking_id: entry.booking_id,
 		scanned_at: entry.scanned_at,
 		service_name: entry.service_name,
+		agreement_name: '—',
 		pax_count: entry.pax_count,
 		destination_address: entry.destination_address,
 		dest_lat: entry.dest_lat,
@@ -48,6 +56,7 @@ export function boardItemFromSnapshot(entry: BoardEntryRow): BoardListItem {
 		customer_phone: '—',
 		customer_email: '—',
 		customer_category: '—',
+		shared_service_id: entry.shared_service_id?.trim() || null,
 		stale: true,
 	};
 }

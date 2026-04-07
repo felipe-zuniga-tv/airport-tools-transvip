@@ -1,4 +1,5 @@
 import { getSession } from "@/lib/auth";
+import { SessionGateClient } from "@/components/auth/session-gate-client";
 import { Routes } from "@/utils/routes";
 import { redirect } from "next/navigation";
 
@@ -9,5 +10,10 @@ export default async function ProtectedAppsLayout({ children }: { children: Reac
 		redirect(Routes.LOGIN);
 	}
 
-	return <>{children}</>
+	return (
+		<>
+			<SessionGateClient />
+			{children}
+		</>
+	);
 }

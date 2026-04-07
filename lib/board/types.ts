@@ -8,6 +8,8 @@ export interface BoardEntryRow {
 	destination_address: string | null;
 	dest_lat: number | null;
 	dest_lng: number | null;
+	/** From booking at scan time; nullable for rows created before this column existed. */
+	shared_service_id: string | null;
 	last_status_check_at: string | null;
 }
 
@@ -15,6 +17,8 @@ export interface BoardListItem {
 	booking_id: number;
 	scanned_at: string;
 	service_name: string;
+	/** Convenio / contrato (from booking.contract_name when synced). */
+	agreement_name: string;
 	pax_count: number;
 	destination_address: string | null;
 	dest_lat: number | null;
@@ -24,6 +28,8 @@ export interface BoardListItem {
 	customer_phone: string;
 	customer_email: string;
 	customer_category: string;
+	/** Present when the booking is tied to a shared service (Zarpe / van compartida). */
+	shared_service_id: string | null;
 	stale: boolean;
 }
 
@@ -34,4 +40,5 @@ export interface BoardActiveResponse {
 	total_bookings: number;
 	total_pax: number;
 	shared_pax_waiting: number;
+	exclusive_pax_waiting: number;
 }
